@@ -9,13 +9,10 @@ Here are the steps of the project:
 
 1. Scrape whosampled.com for, say, 1000 producers. The structure of the dataset from whosampled will be as such: 
 
-{ 
-
+  {
     Producer: "string",
- 
-  Artist: "string",
-  
-  Song Name: "string", 
+    Artist: "string",
+    Song Name: "string", 
   
   Sample Song: "string"
   
