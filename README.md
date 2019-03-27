@@ -8,15 +8,25 @@ I am trying to create a recommendation engine for music producers, mostly hip ho
 Here are the steps of the project:
 
 1. Scrape whosampled.com for, say, 1000 producers. The structure of the dataset from whosampled will be as such: 
-{ Producer: "string",
+{ 
+
+  Producer: "string",
+ 
   Artist: "string",
+  
   Song Name: "string", 
+  
   Sample Song: "string"
+  
   Sample Artist: "string",
+  
   Elements sampled (Voice, Drums, Multiple Elements, etc. This data is provided by whosampled.com): "string",
+  
   Time in sample song where sample appears: "tmstmp" or "int",
+  
   Overall Length of Song: "int"
 
+}
 
 The time in sample song where sample appears is important for two reasons: 1) General EDA: We can plot where in songs most samples are taken from. We could plot this both as an absolute value, i.e., 99% of samples are within first 5 seconds, and as a fraction, i.e., 99% of samples come from the first tenth of the song and 2) We can see if parts of songs are not being utilized. For example, a particular song may have been sampled 100 times, but what if it is only at the beginning, and there is much of it that appears unexplored?
 
