@@ -20,6 +20,8 @@ Here are the steps of the project:
   Overall Length of Song: "int"
 }
 ```
+![](WhoSampled Scrape Screenshot.png)
+
 The time in sample song where sample appears is important for two reasons: 1) General EDA: We can plot where in songs most samples are taken from. We could plot this both as an absolute value, i.e., 99% of samples are within first 5 seconds, and as a fraction, i.e., 99% of samples come from the first tenth of the song and 2) We can see if parts of songs are not being utilized. For example, a particular song may have been sampled 100 times, but what if it is only at the beginning, and there is much of it that appears unexplored?
 
 How has this problem been solved before? If you feel like you are addressing a novel issue, what similar problems have been solved, and how are you borrowing from those?
