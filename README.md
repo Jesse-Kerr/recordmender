@@ -3,20 +3,20 @@
 
 What are you trying to do? Articulate your objectives using absolutely no jargon (i.e. as if you were explaining to a salesperson, executive, or recruiter).
 
-I am trying to create a recommendation engine for music producers, mostly hip hop producers, that will recommend songs for them to sample (i.e., use parts of the song in their own beats). 
+I am trying to create a recommendation engine for music producers, mainly hip hop producers, that will recommend songs for them to sample (i.e., use parts of the song in their own beats). 
 
 Here are the steps of the project:
 
 1. Scrape whosampled.com for, say, 1000 producers. The structure of the dataset from whosampled will be as such: 
 ```
 {
-  Producer: "string",    
-  Artist: "string",
-  Song Name: "string", 
-  Sample Song: "string",
-  Sample Artist: "string",
-  Elements sampled (Voice, Drums, Multiple Elements, etc. [available on whosampled.com]): "string",
-  Time in sample song where sample appears: "tmstmp" or "int",
+  New Song Producer: "string",    
+  New Song Artist: "string",
+  New Song Name: "string", 
+  Sampled Song: "string",
+  Sampled Artist: "string",
+  Elements Sampled (Voice, Drums, Multiple Elements, etc. [available on whosampled.com]): "string",
+  Time in Sampled Song where Sample Appears: "tmstmp" or "int",
   Overall Length of Song: "int"
 }
 ```
