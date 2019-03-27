@@ -32,7 +32,7 @@ OPTIONAL (IF TIME ALLOWS- In order of importance):
 
 The hardest part of this project will be creating the song-song similarity matrix. However, this seems to be an area with some amount of research and tools already produced. The first three links in **References** seem very helpful. The first two are on the `klustr` project, which reduces dimensionality of audio datasets. The third link discusses the merits of different features and different dimensionality reduction techniques.  
 
-Using unsupervised learning and dimensionality reduction techniques, do an item-item cosine similarity of a large song dataset. (This song dataset must include all of the songs sampled in the whosampled.com dataset).
+In essence, I will use unsupervised learning and dimensionality reduction techniques to do an item-item cosine similarity of a large song dataset, which must include all of the songs in the whosampled.com dataset.
 
 ## What is new about your approach, why do you think it will be successful?
     
