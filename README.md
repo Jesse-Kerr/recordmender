@@ -30,7 +30,7 @@ OPTIONAL (IF TIME ALLOWS- In order of importance):
 
 ## How has this problem been solved before? If you feel like you are addressing a novel issue, what similar problems have been solved, and how are you borrowing from those?
 
-The hardest part of this project will be creating the song-song similarity matrix. However, this seems to be an area with some amount of research and tools already produced. The first link in **References** is to the `klustr` project.
+The hardest part of this project will be creating the song-song similarity matrix. However, this seems to be an area with some amount of research and tools already produced. The first three links in **References** seem very helpful. The first two are on the `klustr` project, which reduces dimensionality of audio datasets. The third link discusses the merits of different features and different dimensionality reduction techniques.  
 
 Using unsupervised learning and dimensionality reduction techniques, do an item-item cosine similarity of a large song dataset. (This song dataset must include all of the songs sampled in the whosampled.com dataset).
 
@@ -116,6 +116,11 @@ This tells us how important the sample was to the song. If the sample only appea
 ## What is the next thing you need to work on?
 
 Scraping Whosampled and figuring out the song-song similarity matrix.
+
+Will probably need to scrape a bunch of songs from Youtube or something, shit. Programatically do the youtubetomp3 thing?
+
+To figure out the song-song similarity, work through the klustr jupyter notebook.
+
 Creating the recommender. 
 
 ## References
@@ -124,14 +129,19 @@ Creating the recommender.
 
 Very useful article here. They tried to "find the optimal combination of feature extraction and dimensionality reduction techniques that produced a 2D map... Representations drarn from the high dimensional audio data...[are] typically in the form of STFT or MFCC features..."
 
-2. [](https://medium.com/@LeonFedden/comparative-audio-analysis-with-wavenet-mfccs-umap-t-sne-and-pca-cb8237bfce2f)
+2.[Github Link to klustr project](https://github.com/lamtharnhantrakul/klustr)
 
 
+3. [Comparative audio analysis](https://medium.com/@LeonFedden/comparative-audio-analysis-with-wavenet-mfccs-umap-t-sne-and-pca-cb8237bfce2f)
+Leon walks through different algorithms on audio datasets very helpful.
 
+
+3. [](https://ieeexplore.ieee.org/document/6607550)
 
 3. [Million Song Dataset](https://labrosa.ee.columbia.edu/millionsong/)
 
 Contains many features about each song, possibly useful, hopefully not. 
+
 
 4. [Spotify API](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
 
@@ -145,7 +155,7 @@ Through Spotify API, we can get audio features for any song, like so: `GET https
 
 * Use lyrics from the tracks made by users to help us learn about the user, thus making the comparison to other producers better, thus making the sample recommender better. 
 
-* 
+* Make something that goes into producer's computer and sees what songs they've sampled, so they don't have to list them themselves. 
 
 
 
