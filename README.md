@@ -32,6 +32,17 @@ OPTIONAL (IF TIME ALLOWS- In order of importance):
 
 The hardest part of this project will be creating the song-song similarity matrix. However, this seems to be an area with some amount of research and tools already produced. 
 
+### Song Similarity Matrix
+
+Using unsupervised learning and dimensionality reduction techniques, do an item-item cosine similarity of a large song dataset. (This song dataset must include all of the songs sampled in the whosampled.com dataset).
+
+How will this be done? Options include:
+
+1. 
+
+2.
+
+
 ## What is new about your approach, why do you think it will be successful?
     
 I don't know of any song sample recommender systems out there. I think this will be a useful tool. I also think people will be excited to upload their past samples to the recommender, because the more they upload, the better the recommendations get (like collaborative filtering). The more beats you put in, the better we compare you to other producers and further suggest what you should sample. So producers have incentive to give their data. The web app also lends itself to a "freemium" payment scheme: We'll recommend 10 songs for you to listen to for samples a week for free- after that, you got to pay up. 
@@ -52,18 +63,9 @@ Presentation - slides, interpretive dance?
 
 ## What are your data sources? What is the size of your dataset, and what is your storage format?
 
-Addressed above. Will store data in MongoDB
-
-## What are potential problems with your capstone, and what have you done to mitigate these problems?
-What is the next thing you need to work on?
- Getting the data, not just some, likely all?
-Understanding the data?
-Building a minimum viable product?
-Gauging how much signal might be in the data?
-
 ### Whosampled Dataset 
 
-The structure of the dataset from whosampled will be as such(for each sampled song for each new song for each producer): 
+The structure of the MongoDB from whosampled will be as such(for each sampled song for each new song for each producer): 
 ```
 {
   New Song Producer: "string",    
@@ -81,7 +83,7 @@ The structure of the dataset from whosampled will be as such(for each sampled so
 ```
 ![](whosampled_scrape.png)
 
-### Reason for structure of whosampled dataset
+### Reason for elements of whosampled dataset
 
 1. Elements Sampled
 
@@ -99,19 +101,9 @@ May be useful for EDA purposes.
 
 4. Presence/ Absence of "and throughout" in sample description:
 
-This tells us how important the sample was to the song. If the sample only appears at one second, then it is less essential than one that appears throughout the entire song. 
+This tells us how important the sample was to the song. If the sample only appears at one second, then it is less essential than one that appears throughout the entire song. Will store data in MongoDB
 
-## Song Similarity Matrix
-
-Using unsupervised learning and dimensionality reduction techniques, do an item-item cosine similarity of a large song dataset. (This song dataset must include all of the songs sampled in the whosampled.com dataset).
-
-How will this be done? Options include:
-
-1. 
-
-2.
-
-## Sample Song Metadata Schema
+### Sample Song Metadata Schema
 
 ```
 {
@@ -120,6 +112,13 @@ How will this be done? Options include:
   If you inputted a preferred sample element (voice, drums), is this song similar to other songs sampled for this element?: "float"
 }
 ```
+
+## What are potential problems with your capstone, and what have you done to mitigate these problems?
+
+## What is the next thing you need to work on?
+
+Scraping Whosampled and figuring out the song-song similarity matrix.
+Creating the recommender. 
 
 ## References
 
