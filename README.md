@@ -136,14 +136,14 @@ Very useful article here. They tried to "find the optimal combination of feature
 Leon walks through different algorithms on audio datasets very helpful.
 
 
-3. [](https://ieeexplore.ieee.org/document/6607550)
+4. [Music dim reduction](https://ieeexplore.ieee.org/document/6607550)
+Seems like good useful paper.
 
-3. [Million Song Dataset](https://labrosa.ee.columbia.edu/millionsong/)
+5. [Million Song Dataset](https://labrosa.ee.columbia.edu/millionsong/)
 
 Contains many features about each song, possibly useful, hopefully not. 
 
-
-4. [Spotify API](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
+6. [Spotify API](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
 
 Through Spotify API, we can get audio features for any song, like so: `GET https://api.spotify.com/v1/audio-features/{id}`. Through this, we get features like key, energy, and tempo. This is a last resort, though, because I don't think these features will be helpful in finding new songs to sample. 
 
