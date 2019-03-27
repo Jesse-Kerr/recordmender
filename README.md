@@ -8,7 +8,7 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
 
 1. Scrape whosampled.com for, say, 1000 producers. We want a list of all the songs each producer has ever sampled (see **Whosampled Dataset** section below for more detail on this database schema).
 
-2. Separately, create a similarity matrix that tells how similar any given song is to another. This song dataset must include all of the songs in the whosampled dataset, and hopefully many more. (See **Song Similarity Matrix** below for details on how this will be done.) 
+2. Separately, create a similarity matrix that tells how similar any given song is to another. This song dataset must include all of the songs in the whosampled dataset, and hopefully many more. (See **How has this problem been solved before?** below for details on how this will be done.) 
 
 3. Create recommendation engine, specific to each producer: Based on the songs you've sampled in the past, we recommend you try these songs, which have not been sampled much, for a new sample. 
 
@@ -18,7 +18,7 @@ OPTIONAL (IF TIME ALLOWS- In order of importance):
 
 5. Create interactive web app. Here, producers can upload the songs they've sampled in the past, and the algorithm will recommend new songs to look for samples in.
 
-6. Allow users to input preferences into the web app (I want my sample to be more/ less esoteric (even country of origin, perhaps), I need this specific element for my song, etc.)
+6. Allow users to input preferences into the web app (I want my sample to be more/ less esoteric (country of origin of sample song, time period, perhaps), I need this specific element for my song, etc.)
 
 7. Create a database with other features about the sample songs that can be used in the recommendation engine. (See **Sample Song Metadata Schema** for more details.) 
 
@@ -30,18 +30,9 @@ OPTIONAL (IF TIME ALLOWS- In order of importance):
 
 ## How has this problem been solved before? If you feel like you are addressing a novel issue, what similar problems have been solved, and how are you borrowing from those?
 
-The hardest part of this project will be creating the song-song similarity matrix. However, this seems to be an area with some amount of research and tools already produced. 
-
-### Song Similarity Matrix
+The hardest part of this project will be creating the song-song similarity matrix. However, this seems to be an area with some amount of research and tools already produced. The first link in **References** is to the `klustr` project.
 
 Using unsupervised learning and dimensionality reduction techniques, do an item-item cosine similarity of a large song dataset. (This song dataset must include all of the songs sampled in the whosampled.com dataset).
-
-How will this be done? Options include:
-
-1. 
-
-2.
-
 
 ## What is new about your approach, why do you think it will be successful?
     
@@ -57,9 +48,13 @@ Recordmender would help producers to narrow their search down to more promising 
 
 ## How will you present your work?
 
-Web app - where will you host it, what kind of information will you present?
-Visualization - what final visuals are you aiming to produce?
-Presentation - slides, interpretive dance?
+It will be a web app, an interactive one. I guess I could host on AWS.
+
+The song-song similarity matrix should lend itself to nice visualizations. I would like to get the actual genres of the songs, and color code the songs based off of that, to see how well the dimensionality reduction/class-finding algorithm actually distinguishes between these genres.
+
+I'd also like to have graphs of distributions: How many times a song is usually sampled? How skewed is that distribution? What year has the most samples taken from it? What artist was sampled most? What album?
+
+Presentation: Probably slides, then go into the web app, if it's made. 
 
 ## What are your data sources? What is the size of your dataset, and what is your storage format?
 
@@ -71,9 +66,12 @@ The structure of the MongoDB from whosampled will be as such(for each sampled so
   New Song Producer: "string",    
   New Song Artist: "string",
   New Song Name: "string", 
+  New Song Year: "int",
   All Songs Sampled for this Song: "List"
   Sampled Song: "string",
+  Sampled Song Year: "int",
   Sampled Artist: "string",
+  Sampled Album: "string",
   Elements Sampled (Voice, Drums, Multiple Elements, etc. [available on whosampled.com]): "string",
   Time in Sampled Song where Sample Appears: "tmstmp" or "int",
   Overall Length of Song: "int",
@@ -146,6 +144,8 @@ Through Spotify API, we can get audio features for any song, like so: `GET https
 * Depending on how I get the song similarity data, even predict where in the song to sample.
 
 * Use lyrics from the tracks made by users to help us learn about the user, thus making the comparison to other producers better, thus making the sample recommender better. 
+
+* 
 
 
 
