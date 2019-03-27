@@ -1,8 +1,8 @@
-# recordmender
+# Recordmender
 
 ## What are you trying to do? Articulate your objectives using absolutely no jargon (i.e. as if you were explaining to a salesperson, executive, or recruiter).
 
-I am trying to create a recommendation engine for music producers, mainly hip hop producers, that will recommend songs for them to sample (i.e., use parts of the song in their own beats), based off of the previous songs they've sampled, the beats they've produced, and their self-reported beat-making style.
+I am trying to create a recommendation engine for music producers, mainly hip hop producers, that will recommend songs for them to sample (i.e., use parts of the song in their own beats), based off of the previous songs they've sampled. It may also take into account the beats they've produced, and their self-reported beat-making style.
 
 ### The steps of the project:
 
@@ -10,8 +10,13 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
 
 2. Separately, create a similarity matrix that tells how similar a given song is to another. This song dataset must include all of the songs in the whosampled dataset, and hopefully many more. (Details on how this will be done are below). 
 
-3. Create recommendation engine, specific to each producer: Based on the songs you've sampled in the past, we recommend you listen to these songs to try to find a good sample. This recommendation engine will include other factors, which will have to be scraped into a separate table (see details at bottom). 
+3. Create recommendation engine, specific to each producer: Based on the songs you've sampled in the past, we recommend you try these songs for a new sample. This recommendation engine will include other factors, which will have to be scraped into a separate table (see details at bottom). 
 
+4. Create interactive web app. Here, producers can upload the songs they've sampled in the past, and the algorithm will recommend new songs to look for samples in. Alternatively (experimentally) they can upload their beats, and the algorithm will find how similar they are to other producers based on their beats, and recommend them songs to sample based off of the list of songs other producers have sampled.
+
+5. Deal with cold start problem. If a new producer has never sampled, what will we recommend?
+     1. They can choose from a list of producers the one they are most similar to, and the algorithm will recommend based off of that producer.
+     2. The algorithm can simply recommend 10 songs to sample, songs that are similar to others that have been sampled a lot, but have been sampled much less frequently. 
 
 ## How has this problem been solved before? If you feel like you are addressing a novel issue, what similar problems have been solved, and how are you borrowing from those?
     What is new about your approach, why do you think it will be successful?
@@ -87,8 +92,8 @@ Through Spotify API, we can get audio features for any song, like so: `GET https
 
 ```
 {
-  Record Label who owns the song (may tell us how much the song will cost to sample): "string",
-  How many times song has been sampled: "int",
+  Record Label who owns the song (may tell us how much the song will cost to sample, i.e., royalties): "string",
+  How many times song has been sampled (prefer more esoteric): "int",
   If you inputted a preferred sample element (voice, drums), is this song similar to other songs sampled for this element?: "float"
 }
 ```
@@ -107,3 +112,7 @@ Very useful article here. They tried to "find the optimal combination of feature
 * [Million Song Dataset](https://labrosa.ee.columbia.edu/millionsong/)
 
 Contains many features about each song, possibly useful, hopefully not. 
+
+## Other Ideas
+
+
