@@ -149,6 +149,8 @@ Through Spotify API, we can get audio features for any song, like so: `GET https
 
 7. [Song similarity matrix using features from songs](http://cs229.stanford.edu/proj2017/final-reports/5218770.pdf)
 
+8. [sample spotify work](https://medium.com/@chris.m.pease/automating-finding-music-samples-on-spotify-with-whosampled-54f86bcda1ee)
+
 ## Other Crazy Ideas
 
 * The next-level shit would be getting into multiple song samples. They sampled these two together, what does that mean?
