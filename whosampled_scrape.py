@@ -7,8 +7,12 @@ client = MongoClient()
 soup = BeautifulSoup(features="html.parser")
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 #Change to Chrome for AWS
+options = Options()
+options.headless = True
+driver = webdriver.Chrome(options=options)
 driver = webdriver.Chrome()
 
 def get_links_to_tracks_by_dj(dj):
