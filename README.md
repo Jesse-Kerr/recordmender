@@ -66,7 +66,7 @@ The structure of the MongoDB from whosampled will be as such(for each sampled so
   New Song Producer: "string",    
   New Song Artist: "string",
   New Song Name: "string", 
-  New Song Year: "int",
+  New Song Year: "int", (more information here is better! We need tmstmp data)
   All Songs Sampled for this Song: "List"
   Sampled Song: "string",
   Sampled Song Year: "int",
