@@ -12,11 +12,15 @@ db = client.whosampled
 links_to_tracks_per_dj=db.links_to_tracks_per_dj
 dj_meta_info = db.dj_meta_info
 
-class who_sampled_scraper():
+class whoSampledScraper():
 
     def __init__(self):
-        driver = webdriver.Firefox()
-        driver.get("http://www.whosampled.com")
+
+        '''
+        Initializes scraper and goes to who_sampled.com
+        '''
+        self.driver = webdriver.Firefox()
+        self.driver.get("http://www.whosampled.com")
 
     def go_to_dj_page(self, dj):
         '''
@@ -25,24 +29,26 @@ class who_sampled_scraper():
         Input: DJ (string)
         Returns: None
         '''
-        search = driver.find_element_by_id('searchInput')
+        search = self.driver.find_element_by_id('searchInput')
         search.send_keys(dj)
         sleep(2)
-        artist = driver.find_element_by_id('searchArtists')
+        artist = self.driver.find_element_by_id('searchArtists')
         artist.click()
         sleep(2)
-        def get_num_samples(self, parameter_list):
-            pass
+    
+    def filter_page_by_songs_artist_sampled(self):
+        pass
 
+    def get_num_samples(self):
+        meta = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
 
-        def get_metadata_from_list(meta):
+    def get_metadata_from_list(meta):
         '''
         Takes the result of Selenium query and sets these values for each artist:
         sample_num, cover_num, remix_num. If Selenium doesn't have data on these 
         numbers, sets them to 0. Implemented in get_metadata_and_links_to_tracks_by_dj
         Returns sample_num, cover_num, remix_num
         '''
-        meta_list = meta.split(",")
         meta_list = [meta.strip() for meta in meta_list]
         meta_list = meta.split(" ")
         sample_num = 0
@@ -58,52 +64,52 @@ class who_sampled_scraper():
                 remix_num = meta_list[i-1]  
         return sample_num, cover_num, remix_num
 
-        def get_metadata_and_links_to_tracks_by_dj(dj):
+    def get_metadata_and_links_to_tracks_by_dj(dj):
 
 
-        # Get producer metadata. This returns # samples, # covers, # remixes
-        # if all of those are present.
-        meta = driver.find_elements_by_xpath(
-            "//span[@class='section-header-title']")[0]\
-            .get_attribute('innerHTML')
+    # Get producer metadata. This returns # samples, # covers, # remixes
+    # if all of those are present.
 
-        sample_num, cover_num, remix_num = get_metadata_from_list(meta)
-        total_num = sample_num + cover_num + remix_num
-        #insert into MongoDB    
-        dj_meta_info.insert_one({"dj" : dj,
-                                    "num_samples":sample_num, 
-                                    "num_covers" : cover_num,
-                                    "num_remixes": remix_num,
-                                    "num_total" : total_num})
 
-        # Gets the links to the tracks for the DJ on that page (10 at most)
-        tracks = driver.find_elements_by_xpath("//h3[@class='trackName']/a")
-        track_links = [track.get_attribute('href') for track in tracks]
+    sample_num, cover_num, remix_num = get_metadata_from_list(meta)
+    total_num = sample_num + cover_num + remix_num
+    #insert into MongoDB    
+    dj_meta_info.insert_one({"dj" : dj,
+                                "num_samples":sample_num, 
+                                "num_covers" : cover_num,
+                                "num_remixes": remix_num,
+                                "num_total" : total_num})
 
-        #insert into MongoDB
-        links_to_tracks_per_dj.update({'dj': dj}, {'$pushALL': {'track_links': track_links}})    
+    # Gets the links to the tracks for the DJ on that page (10 at most)
+    tracks = driver.find_elements_by_xpath("//h3[@class='trackName']/a")
+    track_links = [track.get_attribute('href') for track in tracks]
 
-        #driver.quit()
+    #insert into MongoDB
+    links_to_tracks_per_dj.update({'dj': dj}, {'$pushALL': {'track_links': track_links}})    
 
-        def links_to_sample_songs_per_track(track):    
-        # Goes to each track and 
-        for track in tracks:
-            track.click()
-            sleep(2)
-            sampled_songs = driver.find_elements_by_xpath(
-            # find the first bordered list, then get all the a's from the list entries in them
-            "(//div[@class = 'list bordered-list'])\
-            [1]//div[@class='listEntry sampleEntry']/a")
-            driver.execute_script("window.scrollTo(800,1000)")
-            for sampled_song in sampled_songs:
-                sampled_song.click()
-                sampled_song_artist = driver.find_element_by_xpath(
-                #There are two artist info (the sampler and the sampled. Go to second, get artist. )
-                "(//div[@class = 'sampleTrackInfo'])\
-                [2]//div[@class = 'sampleTrackArtists']/a").get_attribute('text')
-                print(sampled_song_artist)    
+    #driver.quit()
+
+    def links_to_sample_songs_per_track(track):    
+    # Goes to each track and 
+    for track in tracks:
+        track.click()
+        sleep(2)
+        sampled_songs = driver.find_elements_by_xpath(
+        # find the first bordered list, then get all the a's from the list entries in them
+        "(//div[@class = 'list bordered-list'])\
+        [1]//div[@class='listEntry sampleEntry']/a")
+        driver.execute_script("window.scrollTo(800,1000)")
+        for sampled_song in sampled_songs:
+            sampled_song.click()
+            sampled_song_artist = driver.find_element_by_xpath(
+            #There are two artist info (the sampler and the sampled. Go to second, get artist. )
+            "(//div[@class = 'sampleTrackInfo'])\
+            [2]//div[@class = 'sampleTrackArtists']/a").get_attribute('text')
+            print(sampled_song_artist)    
 
 if __name__ == "__main__":
-    get_links_to_tracks_by_dj("Kanye West")
+    scraper = whoSampledScraper()
+    scraper.go_to_dj_page("Kanye West")
+    get_links_to_tracks_by_dj()
 
 
