@@ -37,8 +37,13 @@ class whoSampledScraper():
         sleep(2)
     
     def filter_page_by_songs_artist_sampled(self):
-        pass
+        dropdown = self.driver.find_element_by_xpath("//div[@class='optionMenu artistPageMenu']")
+        dropdown.click()
 
+        # the tracks sampled is always the second one
+        sampled = self.driver.find_element_by_xpath("//ul[@class = 'expanded']/li[2]")
+        sampled.click()
+        
     def get_num_samples(self):
         meta = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
 
@@ -71,14 +76,14 @@ class whoSampledScraper():
     # if all of those are present.
 
 
-    sample_num, cover_num, remix_num = get_metadata_from_list(meta)
-    total_num = sample_num + cover_num + remix_num
-    #insert into MongoDB    
-    dj_meta_info.insert_one({"dj" : dj,
-                                "num_samples":sample_num, 
-                                "num_covers" : cover_num,
-                                "num_remixes": remix_num,
-                                "num_total" : total_num})
+        sample_num, cover_num, remix_num = get_metadata_from_list(meta)
+        total_num = sample_num + cover_num + remix_num
+        #insert into MongoDB    
+        dj_meta_info.insert_one({"dj" : dj,
+                                    "num_samples":sample_num, 
+                                    "num_covers" : cover_num,
+                                    "num_remixes": remix_num,
+                                    "num_total" : total_num})
 
     # Gets the links to the tracks for the DJ on that page (10 at most)
     tracks = driver.find_elements_by_xpath("//h3[@class='trackName']/a")
@@ -110,6 +115,5 @@ class whoSampledScraper():
 if __name__ == "__main__":
     scraper = whoSampledScraper()
     scraper.go_to_dj_page("Kanye West")
-    get_links_to_tracks_by_dj()
-
+    filter_page_by_songs_artist_sampled()
 
