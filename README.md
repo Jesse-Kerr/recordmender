@@ -1,4 +1,4 @@
-# Recordmender
+# Recordmend
 
 ## What are you trying to do? Articulate your objectives using absolutely no jargon (i.e. as if you were explaining to a salesperson, executive, or recruiter).
 
@@ -146,6 +146,8 @@ Contains many features about each song, possibly useful, hopefully not.
 6. [Spotify API](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
 
 Through Spotify API, we can get audio features for any song, like so: `GET https://api.spotify.com/v1/audio-features/{id}`. Through this, we get features like key, energy, and tempo. This is a last resort, though, because I don't think these features will be helpful in finding new songs to sample. 
+
+7. [Song similarity matrix using features from songs](http://cs229.stanford.edu/proj2017/final-reports/5218770.pdf)
 
 ## Other Crazy Ideas
 
