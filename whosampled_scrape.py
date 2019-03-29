@@ -1,17 +1,15 @@
-import numpy as np
-import pandas as pd
 from time import sleep
 
 from bs4 import BeautifulSoup
 
 from pymongo import MongoClient
 client = MongoClient()
-soup = BeautifulSoup()
+soup = BeautifulSoup(features="html.parser")
 
 from selenium import webdriver
 
 #Change to Chrome for AWS
-driver = webdriver.Firefox()
+driver = webdriver.Chrome()
 
 def get_links_to_tracks_by_dj(dj):
     
