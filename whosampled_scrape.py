@@ -77,7 +77,7 @@ djs = ['4th Disciple',
  'Thavius Beck',
  'Brandon Bell (record producer)',
  'Anthony Ian Berkeley',
- 'Beyoncé',
+ 'Beyonce',
  'Jeff Bhasker',
  'Big Boi',
  'Big Cats (producer)',
@@ -102,7 +102,7 @@ djs = ['4th Disciple',
  'Bomarr',
  'The Bomb Squad',
  'Miles Bonny',
- 'Dionté Boom',
+ 'Dionte Boom',
  'Metro Boomin',
  'Toni Braxton',
  'Craig Brockman',
@@ -135,7 +135,7 @@ djs = ['4th Disciple',
  'Celestaphone',
  'Cellski',
  'Celph Titled',
- 'Rogét Chahayed',
+ 'Roget Chahayed',
  'Chamillionaire',
  'DJ Cocoa Chanelle',
  'Jeff Chang (journalist)',
@@ -240,9 +240,9 @@ class whoSampledScraper():
     
     def filter_page_by_songs_artist_sampled(self):
         dropdown = self.driver.find_element_by_xpath("//div[@class='optionMenu artistPageMenu']")
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", dropdown)
         dropdown.click()
         #sleep(2)
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", dropdown)
 
         # the tracks sampled is always the second one
         sampled = self.driver.find_element_by_xpath("//ul[@class = 'expanded']/li[2]")
