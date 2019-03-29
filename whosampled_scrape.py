@@ -1,6 +1,9 @@
 from time import sleep
+from pyvirtualdisplay import Display
 
 from bs4 import BeautifulSoup
+display = Display(visible=0, size=(1024, 768))
+display.start()
 
 from pymongo import MongoClient
 client = MongoClient()
@@ -10,10 +13,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 #Change to Chrome for AWS
-options = Options()
-options.headless = True
-driver = webdriver.Chrome(options=options)
-driver = webdriver.Chrome()
+# options = Options()
+# options.headless = True
+# driver = webdriver.Chrome(options=options)
+driver = webdriver.Firefox()
 
 def get_links_to_tracks_by_dj(dj):
     
@@ -35,7 +38,8 @@ def get_links_to_tracks_by_dj(dj):
     
     # Gets the links to the tracks for the DJ on that page (10 at most)
     tracks = driver.find_elements_by_xpath("//h3[@class='trackName']/a")
-    print(tracks)
+    for track in tracks:
+        print(track.get_attribute('href'))
     #insert into MongoDB
 
 def links_to_sample_songs_per_track(track):    
@@ -57,6 +61,6 @@ def links_to_sample_songs_per_track(track):
             print(sampled_song_artist)    
 
 get_links_to_tracks_by_dj("Kanye West")
-
+driver.quit()
 
 
