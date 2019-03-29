@@ -1,5 +1,6 @@
 # Plan
 
+- [ ] Make list of producers to sample
 - [ ] Scrape whosampled.com to mongoDB for 500 producers
 - [ ] Answer 5 questions about the whosampled database.
 - [ ] 
