@@ -7,7 +7,7 @@ if __name__ == "__main__":
     scraper.go_to_who_sampled_home_page()
     for dj in djs: 
         try:
-            scraper.set_more_pages_true()
+            scraper.set_more_who_sampled_pages_true()
             scraper.go_to_dj_page(dj)
             print("At {} page".format(dj))
             scraper.filter_page_by_songs_artist_sampled()
