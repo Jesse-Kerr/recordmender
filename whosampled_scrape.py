@@ -3,8 +3,8 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 import re
 
-display = Display(visible=0, size=(1024, 768))
-display.start()
+# display = Display(visible=0, size=(1024, 768))
+# display.start()
 
 from pymongo import MongoClient
 client = MongoClient()
@@ -17,7 +17,6 @@ class Scraper():
         '''
         Initializes scraper. Sets who_sampled_more_pages = True
         '''
-
         self.driver = webdriver.Firefox()
 
     def get_links_from_wikipage(self):
@@ -35,8 +34,8 @@ class Scraper():
         '''
         
         try:
-            next_page = driver.find_element_by_link_text('next page')
-            driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
+            next_page = self.driver.find_element_by_link_text('next page')
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
             next_page.click()
         except: 
             print("Done with Wiki Section")
@@ -57,11 +56,13 @@ class Scraper():
             page_djs = self.get_links_from_wikipage()
             all_djs += page_djs
             self.go_to_next_wiki_page()
+            sleep(10)
         all_djs = [re.sub("[\(\[].*?[\)\]]", "", dj) for dj in all_djs]
         return all_djs
 
     def go_to_who_sampled_home_page(self):
         self.driver.get("http://www.whosampled.com")
+        sleep(10)
 
     def set_more_who_sampled_pages_true(self):
         self.more_who_sampled_pages = True
@@ -114,7 +115,7 @@ class Scraper():
         '''
 
         num_samples = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
-        num_samples = int(re.sub(['a-z|A-Z| ', '', num_samples]))
+        #num_samples = int(re.sub('a-z|A-Z| ', '', num_samples))
         db.dj_meta_info.insert_one({"dj" : self.dj, "num_samples" : num_samples})
         print("{} has {} samples, inserted into Mongo.".format(self.dj, num_samples))
 
