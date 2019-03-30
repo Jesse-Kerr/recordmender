@@ -127,7 +127,7 @@ class Scraper():
         track_links = [track.get_attribute('href') for track in tracks]
 
         #insert into MongoDB
-        db.links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}})    
+        db.links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}}, upsert= True)    
         print("{} links inserted into Mongo".format(len(track_links)))
 
     def go_to_next_who_sampled_page(self):
