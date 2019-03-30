@@ -16,16 +16,15 @@ dj_meta_info = db.dj_meta_info
 driver = webdriver.Firefox()
 from wikipedia_scrape import get_all_artists, go_to_next_page, get_links_from_wikipage
 djs = get_all_artists()
-driver.quit()
 
 class whoSampledScraper():
 
-    def __init__(self):
+    def __init__(self, driver):
 
         '''
         Initializes scraper and goes to who_sampled.com
         '''
-        self.driver = webdriver.Firefox()
+        self.driver = driver
         self.driver.get("http://www.whosampled.com")
         self.more_pages = True
 
@@ -102,7 +101,7 @@ class whoSampledScraper():
                 print(sampled_song_artist)    
 
 if __name__ == "__main__":
-    scraper = whoSampledScraper()
+    scraper = whoSampledScraper(driver)
     for dj in djs: 
         try:
             scraper.go_to_dj_page(dj)
