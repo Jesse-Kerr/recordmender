@@ -3,8 +3,8 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 import re
 
-# display = Display(visible=0, size=(1024, 768))
-# display.start()
+display = Display(visible=0, size=(1024, 768))
+display.start()
 
 from pymongo import MongoClient
 client = MongoClient()
