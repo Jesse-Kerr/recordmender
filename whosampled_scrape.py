@@ -70,7 +70,7 @@ class whoSampledScraper():
         track_links = [track.get_attribute('href') for track in tracks]
 
         #insert into MongoDB
-        links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}})    
+        links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}}, upsert=True)    
         return track_links
 
     def go_to_next_page(self):
