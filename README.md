@@ -7,22 +7,26 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
 ### Steps to a MVP:
 
 1. WhoSampled Scrape:
-  1. Scrape names of 600 American producers from Wikipedia. - [x]
-    1. Later: Insert that into mongoDB - [ ]
-  2. For each producer:
-    1. Insert meta data (num_samples) - [ ]
-    2. Insert links to the pages for each song they produced. - [ ]
-    3. For each song page:
-      1. Insert links to the song-sample pages (usually multiple) into
+   1. Scrape names of 600 American producers from Wikipedia. - [x] - [x]
+      1. Later: Insert that into mongoDB - [ ] - [ ]
+
+   2. For each producer:
+      1. Insert meta data (num_samples) - [x] - [ ]
+      2. Insert links to the pages for each song they produced. - [x] - [ ]
+          
+      3. For each song page:
+         1. Insert links to the song-sample pages (usually multiple) into
          song_sample_pages.db. Format of this collection should be 'link' :
          link. Don't list producer name in it because there may be duplication
-         (when two producers are on same track). - [ ]
-  3. Get just the distinct links from song_sample_pages_db. - [ ]
-  4. For each link in song_sample_pages_db:
-    1. Get list of producers credited on the page.
-    2. For each producer credited on page:
-      1. Insert data into db.main for producer listed. - [ ]
-  2. Later: Repeat with more producers - [ ]
+         (when two producers are on same track). - [ ] - [ ]
+    3. Get just the distinct links from song_sample_pages_db. - [ ] - [ ]
+    4. For each link in song_sample_pages_db:
+       1. Get list of producers credited on the page. - [ ] - [ ]
+       
+       2. For each producer credited on page:
+       
+          1. Insert data into db.main for producer listed. - [ ]
+    2. Later: Repeat with more producers - [ ]
 
 2. Get db.main into a sparse matrix format.
 
@@ -31,7 +35,7 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
    At step 1.3.1, what if multiple producers listed? I think best is to get the
    producers as a list, and insert the sample data for each producer.
    Because some of the producers may not be on my Wikipedia list, and this may
-   be my only chance to get data on them. 
+   be my only chance to get data on them. - [ ]
 
 ### The steps of the project:
 
