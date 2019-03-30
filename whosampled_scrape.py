@@ -232,9 +232,11 @@ class whoSampledScraper():
         '''
         self.dj = dj
         search = self.driver.find_element_by_id('searchInput')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
         search.send_keys(self.dj)
         sleep(2)
         artist = self.driver.find_element_by_id('searchArtists')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
         sleep(2)
     
@@ -246,12 +248,14 @@ class whoSampledScraper():
 
         # the tracks sampled is always the second one
         sampled = self.driver.find_element_by_xpath("//ul[@class = 'expanded']/li[2]")
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", sampled)
         sampled.click()
         sleep(2)
         
     def get_num_samples_insert_mongo(self):
         num_samples = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
         dj_meta_info.insert_one({"dj" : self.dj, "num_samples" : num_samples})
+        return num_samples
 
     def get_link_to_tracks_by_dj(self):
         '''
@@ -262,7 +266,8 @@ class whoSampledScraper():
 
         #insert into MongoDB
         links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}})    
-            
+        return track_links
+
     def go_to_next_page(self):
         try:
             next_page = self.driver.find_element_by_class_name("next")
@@ -293,10 +298,16 @@ class whoSampledScraper():
 if __name__ == "__main__":
     scraper = whoSampledScraper()
     for dj in djs: 
-        scraper.go_to_dj_page("Kanye West")
-        scraper.filter_page_by_songs_artist_sampled()
-        scraper.get_num_samples_insert_mongo()
-        while scraper.more_pages == True:
-            scraper.get_link_to_tracks_by_dj()
-            scraper.go_to_next_page()
+        try:
+            scraper.go_to_dj_page(dj)
+            print("At {} page".format(dj))
+            scraper.filter_page_by_songs_artist_sampled()
+            num_samples = scraper.get_num_samples_insert_mongo()
+            print("{} has {}".format(dj, num_samples))
+            while scraper.more_pages == True:
+                track_links = scraper.get_link_to_tracks_by_dj()
+                print("{} links inserted into Mongo".format(len(track_links)))
+                scraper.go_to_next_page()
+        except:
+            print("{} was unsuccessful!")
     scraper.driver.quit()
