@@ -19,7 +19,7 @@ def go_to_next_page():
         next_page.click()
         return True
     except: 
-        print("No more pages")
+        print("Done with Wiki Section")
         return False
 
 def get_all_artists():

@@ -39,23 +39,23 @@ class whoSampledScraper():
         search = self.driver.find_element_by_id('searchInput')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
         search.send_keys(self.dj)
-        sleep(2)
+        sleep(10)
         artist = self.driver.find_element_by_id('searchArtists')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
-        sleep(2)
+        sleep(10)
     
     def filter_page_by_songs_artist_sampled(self):
         dropdown = self.driver.find_element_by_xpath("//div[@class='optionMenu artistPageMenu']")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", dropdown)
         dropdown.click()
-        #sleep(2)
+        sleep(10)
 
         # the tracks sampled is always the second one
         sampled = self.driver.find_element_by_xpath("//ul[@class = 'expanded']/li[2]")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", sampled)
         sampled.click()
-        sleep(2)
+        sleep(10)
         
     def get_num_samples_insert_mongo(self):
         num_samples = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
@@ -78,7 +78,7 @@ class whoSampledScraper():
             next_page = self.driver.find_element_by_class_name("next")
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
             next_page.click()
-            sleep(1)
+            sleep(10)
         except:
             print("No more pages")    
             self.more_pages = False
@@ -114,5 +114,5 @@ if __name__ == "__main__":
                 print("{} links inserted into Mongo".format(len(track_links)))
                 scraper.go_to_next_page()
         except:
-            print("{} was unsuccessful!")
+            print("{} was unsuccessful!".format(dj))
     scraper.driver.quit()
