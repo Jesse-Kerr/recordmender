@@ -10,9 +10,6 @@ from pymongo import MongoClient
 client = MongoClient()
 db = client.whosampled
 
-links_to_tracks_per_dj=db.links_to_tracks_per_dj
-dj_meta_info = db.dj_meta_info
-
 class Scraper():
 
     def __init__(self):
@@ -22,18 +19,19 @@ class Scraper():
         '''
 
         self.driver = webdriver.Firefox()
-        self.who_sampled_more_pages = True
+        self.more_who_sampled_pages = True
         self.more_wiki_pages = True
 
     def get_links_from_wikipage(self):
 
         '''
-        Returns all of the artists (djs) off of a specific wikipage. 
+        Returns all of the djs off of a specific wikipage. 
         '''
-        page_artists = self.driver.find_elements_by_xpath("//div[@class='mw-category-group']/ul/li/a")
-        return [artist.get_attribute('title') for artist in page_artists]
+        page_djs = self.driver.find_elements_by_xpath("//div[@class='mw-category-group']/ul/li/a")
+        return [dj.get_attribute('title') for dj in page_djs]
 
     def go_to_next_wiki_page(self):
+        
         '''
         Tries to go to next wiki_page. If fails, sets more_wiki_pages = False
         '''
@@ -46,23 +44,26 @@ class Scraper():
             print("Done with Wiki Section")
             self.more_wiki_pages = False
 
-    def get_all_wiki_artists(self):
+    def get_all_wiki_djs(self):
         
         '''
         Gets all DJs from a specific category of Wikipedia
         Returns a list of strings with any information in paranthese or brackets
         removed (usually just specifies that they are a musician.)
         '''
-        
-        all_artists = []
+
+        all_djs = []
         self.driver.get("https://en.wikipedia.org/wiki/Category:American_hip_hop_record_producers")
         while self.more_wiki_pages == True:
-            page_artists = self.get_links_from_wikipage()
-            all_artists += page_artists
+            page_djs = self.get_links_from_wikipage()
+            all_djs += page_djs
             self.go_to_next_wiki_page()
-        all_artists = [re.sub("[\(\[].*?[\)\]]", "", artist) for artist in all_artists]
-        return all_artists
-    
+        all_djs = [re.sub("[\(\[].*?[\)\]]", "", dj) for dj in all_djs]
+        return all_djs
+
+    def go_to_who_sampled_home_page(self):
+        self.driver.get("http://www.whosampled.com")
+
     def go_to_dj_page(self, dj):
         '''
         Inputs the DJ you're working on into the search box. Gets you to his/her home page.
@@ -71,17 +72,28 @@ class Scraper():
         Returns: None
         '''
         self.dj = dj
-        self.driver.get("http://www.whosampled.com")
+
+        # The search box. This is where we will input the dj to search.
         search = self.driver.find_element_by_id('searchInput')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
         search.send_keys(self.dj)
         sleep(10)
+
+        #This opens the dropdown of different responses to our query. We
+        #generally want to click on the first element in the dropdown.
         artist = self.driver.find_element_by_id('searchArtists')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
         sleep(10)
     
     def filter_page_by_songs_artist_sampled(self):
+        
+        '''
+        The page for the artist contains more than just the songs they 
+        sampled. It also has songs that sampled them, remixes, etc. So we need 
+        to filter only for songs that they sampled.
+        '''
+
         dropdown = self.driver.find_element_by_xpath("//div[@class='optionMenu artistPageMenu']")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", dropdown)
         dropdown.click()
@@ -94,9 +106,14 @@ class Scraper():
         sleep(10)
         
     def get_num_samples_insert_mongo(self):
+
+        '''
+        Inserts num_samples and prints it out.
+        '''
+
         num_samples = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
-        dj_meta_info.insert_one({"dj" : self.dj, "num_samples" : num_samples})
-        return num_samples
+        db.dj_meta_info.insert_one({"dj" : self.dj, "num_samples" : num_samples})
+        print("{} has {}".format(self.dj, num_samples))
 
     def get_link_to_tracks_by_dj(self):
         '''
@@ -106,10 +123,11 @@ class Scraper():
         track_links = [track.get_attribute('href') for track in tracks]
 
         #insert into MongoDB
-        links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}})    
-        return track_links
+        db.links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}})    
+        print("{} links inserted into Mongo".format(len(track_links)))
 
-    def go_to_next_page(self):
+    def go_to_next_who_sampled_page(self):
+        
         try:
             next_page = self.driver.find_element_by_class_name("next")
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
@@ -117,30 +135,44 @@ class Scraper():
             sleep(10)
         except:
             print("No more pages")    
-            self.who_sample = False
-    def insert_links_to_song_sample_songs(self, song_page):    
-        # Goes to each track and 
-        for track in tracks:
-            track.click()
-            sleep(2)
-            sampled_songs = self.driver.find_elements_by_xpath(
-            # find the first bordered list, then get all the a's from the list entries in them
-            "(//div[@class = 'list bordered-list'])\
-            [1]//div[@class='listEntry sampleEntry']/a")
-            self.driver.execute_script("window.scrollTo(800,1000)")
-            for sampled_song in sampled_songs:
-                sampled_song.click()
-                sampled_song_artist = self.driver.find_element_by_xpath(
-                #There are two artist info (the sampler and the sampled. Go to second, get artist. )
-                "(//div[@class = 'sampleTrackInfo'])\
-                [2]//div[@class = 'sampleTrackArtists']/a").get_attribute('text')
-                print(sampled_song_artist)
+            self.more_who_sampled_pages = False
+
+    def get_and_insert_links_to_song_sample_songs(self, song_page):    
+
+        '''
+        Takes the link to a song_page and finds all of the song_sample_pages
+        associated with it. Inserts those into mongo.
+        '''    
+        self.driver.get(song_page)
+        sleep(10)
+
+        # find the first bordered list.
+        # then get all the a's from the list entries in them.
+        sampled_songs = self.driver.find_elements_by_xpath(
+        "(//div[@class = 'list bordered-list'])\
+        [1]//div[@class='listEntry sampleEntry']/a")
+        
+        db.song_sample_pages.insert_many([{'link': link} for link in sampled_songs])
 
     def get_distinct_from_song_sample_pages_db(self):
         pass 
 
-    def get_list_of_producers_credited_on_page(self, page):
-        pass
+    def get_list_of_producers_credited_on_page(self, sample_song_page):
+        '''
+        Takes in a link to a sample song page. Return the producers credited on
+        the page as a list of strings.
+        '''
     
-    def insert_song_sample_info_into_db_main(self, producer):
         pass
+    def insert_song_sample_info_into_db_main(self, sample_song_page, producer_list):
+        self.driver.get(sample_song_page)
+        
+        # there are two artist info -the sampler and the sampled. 
+        # go to second, get artist.
+        sampled_song_artist = self.driver.find_element_by_xpath(
+            "(//div[@class = 'sampleTrackInfo'])\
+            [2]//div[@class = 'sampleTrackArtists']/a").get_attribute('text')
+
+        # Insert the information found on this page for each of the producers in
+        # the producer_list
+        db.main.insert_many([{'link': link} for link in sampled_songs])
