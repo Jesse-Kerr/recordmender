@@ -19,8 +19,6 @@ class Scraper():
         '''
 
         self.driver = webdriver.Firefox()
-        self.more_who_sampled_pages = True
-        self.more_wiki_pages = True
 
     def get_links_from_wikipage(self):
 
@@ -52,6 +50,7 @@ class Scraper():
         removed (usually just specifies that they are a musician.)
         '''
 
+        self.more_wiki_pages = True
         all_djs = []
         self.driver.get("https://en.wikipedia.org/wiki/Category:American_hip_hop_record_producers")
         while self.more_wiki_pages == True:
@@ -63,6 +62,9 @@ class Scraper():
 
     def go_to_who_sampled_home_page(self):
         self.driver.get("http://www.whosampled.com")
+
+    def set_more_who_sampled_pages_true(self):
+        self.more_who_sampled_pages = True
 
     def go_to_dj_page(self, dj):
         '''
@@ -112,10 +114,11 @@ class Scraper():
         '''
 
         num_samples = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
+        num_samples = int(re.sub(['a-z|A-Z| ', '', num_samples]))
         db.dj_meta_info.insert_one({"dj" : self.dj, "num_samples" : num_samples})
-        print("{} has {}".format(self.dj, num_samples))
+        print("{} has {} samples, inserted into Mongo.".format(self.dj, num_samples))
 
-    def get_link_to_tracks_by_dj(self):
+    def get_link_to_tracks_by_dj_insert_mongo(self):
         '''
         Gets the links to the tracks for the DJ on that page (10 at most)
         '''
@@ -153,26 +156,51 @@ class Scraper():
         [1]//div[@class='listEntry sampleEntry']/a")
         
         db.song_sample_pages.insert_many([{'link': link} for link in sampled_songs])
-
+        print("{} inserted into db.song_sample_pages".format(sampled_songs))
+        
     def get_distinct_from_song_sample_pages_db(self):
         pass 
 
-    def get_list_of_producers_credited_on_page(self, sample_song_page):
+    def get_list_of_producers_credited_on_page(self):
         '''
         Takes in a link to a sample song page. Return the producers credited on
         the page as a list of strings.
         '''
-    
         pass
-    def insert_song_sample_info_into_db_main(self, sample_song_page, producer_list):
-        self.driver.get(sample_song_page)
+        #return producer_list
         
+    def insert_song_sample_info_into_db_main(self, sample_song_page):
+        self.driver.get(sample_song_page)
+        sleep(10)
+
+        producer_list = self.get_list_of_producers_credited_on_page()
+
         # there are two artist info -the sampler and the sampled. 
         # go to second, get artist.
         sampled_song_artist = self.driver.find_element_by_xpath(
             "(//div[@class = 'sampleTrackInfo'])\
             [2]//div[@class = 'sampleTrackArtists']/a").get_attribute('text')
 
+        # Get all the rest of the information.
+        # ...
+        # ...
+
         # Insert the information found on this page for each of the producers in
         # the producer_list
-        db.main.insert_many([{'link': link} for link in sampled_songs])
+        # db.main.insert_many([{'sampled_song_artist': sampled_song_artist,
+        #                       'new_song_producer' :  producer,
+        #                       'new_song_artist' : ,  
+        #                       'new_song_name' : , 
+        #                       'new_song_year': , 
+        #                       'all_songs_sampled_for_this_song': 
+        #                       'sampled_song' : ,
+        #                       'sampled_song_year': , 
+        #                       'sampled_artist': , 
+        #                       'sampled_album': ,  
+        #                       'elements_sampled': ,
+        #                       'time_in_sampled_song_where_sample_appears': , 
+        #                       'overall_length_of_sample_song': ,
+        #                       'name_of_contributor': , 
+        #                       'presence_of_"and throughout"_in_description':  } 
+        #                       for producer in producer_list])
+
