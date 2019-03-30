@@ -25,10 +25,31 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
        
        2. For each producer credited on page:
        
-          1. Insert data into db.main for producer listed. - [ ]
-    2. Later: Repeat with more producers - [ ]
+          1. Insert data into db.main for producer listed. - [ ] - [ ]
+    2. Later: Repeat with more producers - [ ] - [ ]
 
 2. Get db.main into a sparse matrix format.
+
+3. Make recommendation engine.
+
+   1. Create similarity matrix
+
+   2. Weight recommender to recommend songs with less samples. 
+
+4. Test the recommender
+
+5. Other features of songs, to recommend outside of the who_sampled. 
+
+   1. Spotify API?
+
+6. web app
+
+7. Allow users to input preferences into the web app (I want my sample to be more/ less esoteric (country of origin of sample song, time period, perhaps), I need this specific element for my song, etc.)
+
+8. cold start problem
+
+9. use the producer's beats to figure out who to compare them to.
+
 
 ### Potential Problems
 1. Multiple producers for one track:
