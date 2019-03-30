@@ -4,6 +4,35 @@
 
 I am trying to create a recommendation engine for music producers, mainly hip hop producers, that will recommend songs for them to sample (i.e., use parts of the song in their own beats), based off of the previous songs they've sampled. It will recommend songs that are similar to what they have already sampled but that have been sampled much less frequently in total. It may also take into account the beats they've produced, their self-reported beat-making style, and other factors about the sample songs to make recommendations.
 
+### Steps to a MVP:
+
+1. WhoSampled Scrape:
+  1. Scrape names of 600 American producers from Wikipedia. - [x]
+    1. Later: Insert that into mongoDB - [ ]
+  2. For each producer:
+    1. Insert meta data (num_samples) - [ ]
+    2. Insert links to the pages for each song they produced. - [ ]
+    3. For each song page:
+      1. Insert links to the song-sample pages (usually multiple) into
+         song_sample_pages.db. Format of this collection should be 'link' :
+         link. Don't list producer name in it because there may be duplication
+         (when two producers are on same track). - [ ]
+  3. Get just the distinct links from song_sample_pages_db. - [ ]
+  4. For each link in song_sample_pages_db:
+    1. Get list of producers credited on the page.
+    2. For each producer credited on page:
+      1. Insert data into db.main for producer listed. - [ ]
+  2. Later: Repeat with more producers - [ ]
+
+2. Get db.main into a sparse matrix format.
+
+### Potential Problems
+1. Multiple producers for one track:
+   At step 1.3.1, what if multiple producers listed? I think best is to get the
+   producers as a list, and insert the sample data for each producer.
+   Because some of the producers may not be on my Wikipedia list, and this may
+   be my only chance to get data on them. 
+
 ### The steps of the project:
 
 1. Scrape whosampled.com for, say, 1000 producers. We want a list of all the songs each producer has ever sampled (see **Whosampled Dataset** section below for more detail on this database schema).
