@@ -5,7 +5,7 @@ if __name__ == "__main__":
     scraper = Scraper()
     djs = scraper.get_all_wiki_djs()
     scraper.go_to_who_sampled_home_page()
-    for dj in djs: 
+    for dj in djs[4:]: 
         try:
             scraper.set_more_who_sampled_pages_true()
             scraper.go_to_dj_page(dj)

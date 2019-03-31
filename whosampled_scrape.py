@@ -18,7 +18,8 @@ class Scraper():
         Initializes scraper. Sets who_sampled_more_pages = True
         '''
         self.driver = webdriver.Firefox()
-
+        self.driver.implicitly_wait(60)
+        
     def get_links_from_wikipage(self):
 
         '''
@@ -36,6 +37,7 @@ class Scraper():
         try:
             next_page = self.driver.find_element_by_link_text('next page')
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
+            #sleep(2)
             next_page.click()
         except: 
             print("Done with Wiki Section")
@@ -56,13 +58,13 @@ class Scraper():
             page_djs = self.get_links_from_wikipage()
             all_djs += page_djs
             self.go_to_next_wiki_page()
-            sleep(10)
+            #sleep(5)
         all_djs = [re.sub("[\(\[].*?[\)\]]", "", dj) for dj in all_djs]
         return all_djs
 
     def go_to_who_sampled_home_page(self):
         self.driver.get("http://www.whosampled.com")
-        sleep(10)
+        #sleep(5)
 
     def set_more_who_sampled_pages_true(self):
         self.more_who_sampled_pages = True
@@ -79,15 +81,16 @@ class Scraper():
         # The search box. This is where we will input the dj to search.
         search = self.driver.find_element_by_id('searchInput')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
+        #sleep(2)
         search.send_keys(self.dj)
-        sleep(10)
+        sleep(1)
 
         #This opens the dropdown of different responses to our query. We
         #generally want to click on the first element in the dropdown.
         artist = self.driver.find_element_by_id('searchArtists')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
-        sleep(10)
+        #sleep(5)
     
     def filter_page_by_songs_artist_sampled(self):
         
@@ -99,14 +102,16 @@ class Scraper():
 
         dropdown = self.driver.find_element_by_xpath("//div[@class='optionMenu artistPageMenu']")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", dropdown)
+        #sleep(2)
         dropdown.click()
-        sleep(10)
+        #sleep(5)
 
         # the tracks sampled is always the second one
         sampled = self.driver.find_element_by_xpath("//ul[@class = 'expanded']/li[2]")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", sampled)
+        #sleep(2)
         sampled.click()
-        sleep(10)
+        #sleep(5)
         
     def get_num_samples_insert_mongo(self):
 
@@ -135,8 +140,9 @@ class Scraper():
         try:
             next_page = self.driver.find_element_by_class_name("next")
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
+            #sleep(10)
             next_page.click()
-            sleep(10)
+            #sleep(10)
         except:
             print("No more pages")    
             self.more_who_sampled_pages = False
@@ -148,7 +154,7 @@ class Scraper():
         associated with it. Inserts those into mongo.
         '''    
         self.driver.get(song_page)
-        sleep(10)
+        sleep(5)
 
         # find the first bordered list.
         # then get all the a's from the list entries in them.
@@ -172,7 +178,7 @@ class Scraper():
         
     def insert_song_sample_info_into_db_main(self, sample_song_page):
         self.driver.get(sample_song_page)
-        sleep(10)
+        sleep(5)
 
         producer_list = self.get_list_of_producers_credited_on_page()
 
