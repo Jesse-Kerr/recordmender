@@ -87,7 +87,7 @@ class Scraper():
 
         #This opens the dropdown of different responses to our query. We
         #generally want to click on the first element in the dropdown.
-        artist = self.driver.find_element_by_id('searchArtists')
+        artist = self.driver.find_element_by_xpath("//div[@id='searchArtists']/ul/li[1]")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
         #sleep(5)
