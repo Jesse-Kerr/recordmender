@@ -91,9 +91,9 @@ class Scraper():
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
         #sleep(5)
-    
+
     def filter_page_by_songs_artist_sampled(self):
-        
+
         '''
         The page for the artist contains more than just the songs they 
         sampled. It also has songs that sampled them, remixes, etc. So we need 
@@ -154,16 +154,18 @@ class Scraper():
         associated with it. Inserts those into mongo.
         '''    
         self.driver.get(song_page)
-        sleep(5)
+        #sleep(5)
 
         # find the first bordered list.
         # then get all the a's from the list entries in them.
-        sampled_songs = self.driver.find_elements_by_xpath(
+        song_sample_pages = self.driver.find_elements_by_xpath(
         "(//div[@class = 'list bordered-list'])\
         [1]//div[@class='listEntry sampleEntry']/a")
-        
-        db.song_sample_pages.insert_many([{'link': link} for link in sampled_songs])
-        print("{} inserted into db.song_sample_pages".format(sampled_songs))
+
+        song_sample_pages = [song_sample_page.get_attribute('href') for song_sample_page in song_sample_pages]
+
+        db.song_sample_pages.insert_many([{'link': link} for link in song_sample_pages])
+        print("{} links inserted into db.song_sample_pages".format(len(song_sample_pages)))
         
     def get_distinct_from_song_sample_pages_db(self):
         pass 
