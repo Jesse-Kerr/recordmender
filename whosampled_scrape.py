@@ -172,7 +172,7 @@ class Scraper():
         
     def insert_song_sample_info_into_db_main(self, song_sample_page):
         self.driver.get(song_sample_page)
-        #sleep(5)
+        sleep(2)
         self.driver.implicitly_wait(0)
 
         try:
