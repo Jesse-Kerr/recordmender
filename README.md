@@ -12,16 +12,16 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
 
    2. For each producer:
       1. Insert meta data (num_samples) - [x] - [ ]
-      2. Insert links to the pages for each song they produced. - [x] - [ ]
+      2. Insert links to the pages for each song they produced. - [x] - [x]
           
       3. For each song page:
          1. Insert links to the song-sample pages (usually multiple) into
          song_sample_pages.db. Format of this collection should be 'link' :
          link. Don't list producer name in it because there may be duplication
          (when two producers are on same track). - [ ] - [ ]
-    3. Get just the distinct links from song_sample_pages_db. - [ ] - [ ]
+    3. Get just the distinct links from song_sample_pages_db. - [x] - [x]
     4. For each link in song_sample_pages_db:
-       1. Get list of producers credited on the page. - [ ] - [ ]
+       1. Get list of producers credited on the page. - [x] - [x]
        
        2. For each producer credited on page:
        
