@@ -4,7 +4,7 @@ from whosampled_scrape import Scraper
 if __name__ == "__main__":
     scraper = Scraper()
     djs = scraper.get_all_wiki_djs()
-    index = djs.index("Ronnie Hudson")
+    index = djs.index("Anthony Preston ")
     for dj in djs[index:]: 
         try:
             scraper.go_to_who_sampled_home_page()

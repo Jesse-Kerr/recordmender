@@ -12,16 +12,16 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
 
    2. For each producer:
       1. Insert meta data (num_samples) - [x] - [ ]
-      2. Insert links to the pages for each song they produced. - [x] - [ ]
+      2. Insert links to the pages for each song they produced. - [x] - [x]
           
       3. For each song page:
          1. Insert links to the song-sample pages (usually multiple) into
          song_sample_pages.db. Format of this collection should be 'link' :
          link. Don't list producer name in it because there may be duplication
          (when two producers are on same track). - [ ] - [ ]
-    3. Get just the distinct links from song_sample_pages_db. - [ ] - [ ]
+    3. Get just the distinct links from song_sample_pages_db. - [x] - [x]
     4. For each link in song_sample_pages_db:
-       1. Get list of producers credited on the page. - [ ] - [ ]
+       1. Get list of producers credited on the page. - [x] - [x]
        
        2. For each producer credited on page:
        
@@ -57,6 +57,20 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
    producers as a list, and insert the sample data for each producer.
    Because some of the producers may not be on my Wikipedia list, and this may
    be my only chance to get data on them. - [ ]
+
+### Notes:
+Going to start 3.1 while 1.2.2 still running. 3.1 will only run on the first _ of 1.2.2, and do the rest later. 
+
+When I run 3.1 again with rest of data, use:
+
+''' done_djs = db.links_to_tracks_per_dj.find('dj').Limit(435)
+'''
+Then in  insert_links_to_song_sample_pages, put:
+
+'''
+ {"distinct": "links_to_tracks_per_dj", 
+        "query": {"dj": {"$nin": done_djs s}}, 
+        "key":"track_links"}) 
 
 ### The steps of the project:
 
