@@ -58,6 +58,20 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
    Because some of the producers may not be on my Wikipedia list, and this may
    be my only chance to get data on them. - [ ]
 
+### Notes:
+Going to start 3.1 while 1.2.2 still running. 3.1 will only run on the first _ of 1.2.2, and do the rest later. 
+
+When I run 3.1 again with rest of data, use:
+
+''' done_djs = db.links_to_tracks_per_dj.find('dj').Limit(435)
+'''
+Then in  insert_links_to_song_sample_pages, put:
+
+'''
+ {"distinct": "links_to_tracks_per_dj", 
+        "query": {"dj": {"$nin": done_djs s}}, 
+        "key":"track_links"}) 
+
 ### The steps of the project:
 
 1. Scrape whosampled.com for, say, 1000 producers. We want a list of all the songs each producer has ever sampled (see **Whosampled Dataset** section below for more detail on this database schema).
