@@ -1,10 +1,13 @@
 from time import sleep
 from pyvirtualdisplay import Display
-from selenium import webdriver
 import re
 
-display = Display(visible=0, size=(1024, 768))
-display.start()
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+chrome_options = Options()
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--headless")
 
 from pymongo import MongoClient
 client = MongoClient()
@@ -17,7 +20,7 @@ class Scraper():
         '''
         Initializes scraper. Sets who_sampled_more_pages = True
         '''
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
         self.driver.implicitly_wait(60)
         
     def get_links_from_wikipage(self):
@@ -136,14 +139,14 @@ class Scraper():
         print("{} links inserted into Mongo".format(len(track_links)))
 
     def go_to_next_who_sampled_page(self):
-        
-        try:
-            next_page = self.driver.find_element_by_class_name("next")
+        next_page = self.driver.find_elements_by_class_name("next")
+        if len(next_page) > 0:
+            next_page = next_page[0]
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
             #sleep(10)
             next_page.click()
             #sleep(10)
-        except:
+        else:
             print("No more pages")    
             self.more_who_sampled_pages = False
 
@@ -167,49 +170,158 @@ class Scraper():
         db.song_sample_pages.insert_many([{'link': link} for link in song_sample_pages])
         print("{} links inserted into db.song_sample_pages".format(len(song_sample_pages)))
         
-    def get_distinct_from_song_sample_pages_db(self):
-        pass 
+    def insert_song_sample_info_into_db_main(self, song_sample_page):
+        self.driver.get(song_sample_page)
+        #sleep(5)
+        self.driver.implicitly_wait(0)
 
-    def get_list_of_producers_credited_on_page(self):
-        '''
-        Takes in a link to a sample song page. Return the producers credited on
-        the page as a list of strings.
-        '''
-        pass
-        #return producer_list
+        try:
+            new_producer_list = self.driver.find_elements_by_xpath(
+            "(//div[@class = 'sampleEntryBox'])[1]\
+             /div[@class = 'sampleAdditionalInfo sample-layout-row']\
+             /div[@class = 'sampleAdditionalInfoContainer sample-layout-row-right']\
+             /div[@class = 'track-metainfo-wrapper']\
+             /div[@class='track-metainfo']\
+            /span[@itemprop='producer']/a/span")
+            new_producer_list = [producer.get_attribute('innerHTML') for producer in new_producer_list]
+        except:
+            new_producer_list = ["None Listed"]
+            
+        try:
+            old_producer_list = self.driver.find_elements_by_xpath(
+            "(//div[@class = 'sampleEntryBox'])[2]\
+             /div[@class = 'sampleAdditionalInfo sample-layout-row']\
+             /div[@class = 'sampleAdditionalInfoContainer sample-layout-row-right']\
+             /div[@class = 'track-metainfo-wrapper']\
+             /div[@class='track-metainfo']\
+             /span[@itemprop='producer']/a/span")
+            old_producer_list = [producer.get_attribute('innerHTML') for producer in old_producer_list]
+        except:
+            old_producer_list = "None Listed"        
+
+        try:
+            new_song_artist = self.driver.find_element_by_xpath(
+              "(//div[@class = 'sampleTrackMetadata'])[1]\
+                /div[@class = 'sampleTrackInfo']/h3\
+                /div[@class = 'sampleTrackArtists']\
+                /a").get_attribute('text')
+        except:
+            new_song_artist = "None Listed"
+
+        try:    
+            new_song_name = self.driver.find_element_by_xpath(
+              "(//div[@class = 'sampleTrackMetadata'])[1]\
+                /div[@class = 'sampleTrackInfo']\
+                /h3/a").get_attribute('text')
+        except:
+            new_song_name = "None Listed"
+
+        try:
+            new_song_year = int(self.driver.find_element_by_xpath(
+                "(//div[@class = 'sampleTrackMetadata'])[1]\
+                /div[@class = 'sampleReleaseDetails']\
+                /div[@class = 'trackLabel']\
+                /p[@class = 'label-details']\
+                /a[@itemprop = 'datePublished']\
+                ").get_attribute('text'))
+        except:
+            new_song_year ="None Listed"
+
+        try:
+            new_song_album = self.driver.find_element_by_xpath(
+               "(//div[@class = 'sampleTrackMetadata'])[1]\
+                /div[@class = 'sampleReleaseDetails']\
+                /p[@class = 'release-name']\
+                /a").get_attribute('text')
+        except:
+            new_song_album ="None Listed"
+
+        try:
+            sampled_song_name = self.driver.find_element_by_xpath(
+              "(//div[@class = 'sampleTrackMetadata'])[2]\
+                /div[@class = 'sampleTrackInfo']\
+                /h3/a[@class = 'trackName']").get_attribute('text')
+        except:
+            sampled_song_name ="None Listed"
+
+        try:    
+            sampled_song_artist = self.driver.find_element_by_xpath(
+              "(//div[@class = 'sampleTrackMetadata'])[2]\
+                /div[@class = 'sampleTrackInfo']/h3\
+                /div[@class = 'sampleTrackArtists']\
+                /a").get_attribute('text')
+
+        except: 
+            sampled_song_artist = "None Listed"
+
+        try:
+            sampled_song_year = int(self.driver.find_element_by_xpath(
+                "(//div[@class = 'sampleTrackMetadata'])[2]\
+                /div[@class = 'sampleReleaseDetails']\
+                /div[@class = 'trackLabel']\
+                /p[@class = 'label-details']\
+                /a[@itemprop = 'datePublished']\
+                ").get_attribute('text'))
+        except:
+            sampled_song_year = "None Listed"
+
+        try:
+            sampled_album = self.driver.find_element_by_xpath(
+               "(//div[@class = 'sampleTrackMetadata'])[2]\
+                /div[@class = 'sampleReleaseDetails']\
+                /p[@class = 'release-name']\
+                /a").get_attribute('text')
+        except:
+            sampled_album = "None Listed"
+            
+        try:
+            elements = self.driver.find_element_by_xpath(
+                "//div[@class = 'section-header']/h2").get_attribute('innerHTML')
+        except:
+            elements = "None Listed"
+
+        try:
+            time_in_sampled_song_where_sample_appears = self.driver.find_element_by_xpath(
+                "//strong[@id = 'sample-source-timing']/span").get_attribute('innerHTML')
+        except:
+            time_in_sampled_song_where_sample_appears = "None Listed"
+
+        try:   
+            contributor = self.driver.find_element_by_xpath(
+                "//div[@class='sampleContributed sample-layout-row-right']/p/a").get_attribute('innerHTML')
+        except:
+            contributor = "None Listed"
+
+        try:    
+            contributor_votes = self.driver.find_element_by_xpath(
+                "//div[@class='sampleContributed sample-layout-row-right']/p").text
+        except:
+            contributor_votes = "None Listed"
         
-    def insert_song_sample_info_into_db_main(self, sample_song_page):
-        self.driver.get(sample_song_page)
-        sleep(5)
-
-        producer_list = self.get_list_of_producers_credited_on_page()
-
-        # there are two artist info -the sampler and the sampled. 
-        # go to second, get artist.
-        sampled_song_artist = self.driver.find_element_by_xpath(
-            "(//div[@class = 'sampleTrackInfo'])\
-            [2]//div[@class = 'sampleTrackArtists']/a").get_attribute('text')
-
-        # Get all the rest of the information.
-        # ...
-        # ...
-
+        try:
+            presence_of_and_throughout = self.driver.find_element_by_xpath(
+                "(//div[@class='timing-wrapper'])[1]").text
+        except:
+            presence_of_and_throughout = "None Listed"
+        
         # Insert the information found on this page for each of the producers in
         # the producer_list
-        # db.main.insert_many([{'sampled_song_artist': sampled_song_artist,
-        #                       'new_song_producer' :  producer,
-        #                       'new_song_artist' : ,  
-        #                       'new_song_name' : , 
-        #                       'new_song_year': , 
-        #                       'all_songs_sampled_for_this_song': 
-        #                       'sampled_song' : ,
-        #                       'sampled_song_year': , 
-        #                       'sampled_artist': , 
-        #                       'sampled_album': ,  
-        #                       'elements_sampled': ,
-        #                       'time_in_sampled_song_where_sample_appears': , 
-        #                       'overall_length_of_sample_song': ,
-        #                       'name_of_contributor': , 
-        #                       'presence_of_"and throughout"_in_description':  } 
-        #                       for producer in producer_list])
+        db.main_redo.insert_many([{'new_song_producer' : producer,
+                            'sampled_song_producer': old_producer_list,
+                            'new_song_artist' : new_song_artist, 
+                            'new_song_name' : new_song_name, 
+                            'new_song_year': new_song_year,
+                            'new_song_album': new_song_album, 
+                            'sampled_artist': sampled_song_artist, 
+                            'sampled_song_name': sampled_song_name,
+                            'sampled_song_year': sampled_song_year, 
+                            'sampled_song_album' : sampled_album,
+                            'elements_sampled': elements,
+                            'time_in_sampled_song_where_sample_appears': time_in_sampled_song_where_sample_appears,
+                            'name_of_contributor': contributor, 
+                            'contributor_points' : contributor_votes,
+                            'presence_of_"and throughout"_in_description': presence_of_and_throughout,
+                            'URL': song_sample_page}
+                              for producer in new_producer_list])
 
+        self.driver.implicitly_wait(10)
