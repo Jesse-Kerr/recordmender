@@ -23,8 +23,8 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
     
     df = pd.DataFrame(list(mongo_collection.find()))
 
-    #Turn sampled_song_producer from list
-    df['sampled_song_producer'] = df.sampled_song_producer.apply( lambda x: ''.join(x))
+    #Turn sampled_song_producer from list to string
+    df['sampled_song_producer'] = df.sampled_song_producer.apply( lambda x: ', '.join(x))
 
     #Create new column with both sampled_artist and sampled_name
     df['sampled_artist_and_name'] = "{} - {}".format(df['sampled_artist'], df['sampled_song_name']) 
@@ -41,4 +41,5 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
 
     make_util(utility_matrix, df)
     
-    return utility_matrix
+    utility2 = pd.DataFrame.from_dict(utility_matrix, orient = 'index')
+    return utility2
