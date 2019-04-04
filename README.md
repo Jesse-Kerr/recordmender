@@ -36,7 +36,22 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
 
    2. Weight recommender to recommend songs with less samples. 
 
+   3. Think about this: How many times did the producer sample that song (or better, that artist?) Look up pivot_tables sums. Instead of 
+   saying did the person sample, think about how many times the producer sampled. This is "confidence". 
+    The confidence matrix is made separately. Actually no, it's not. 
+
 4. Test the recommender
+
+   1. The method: Hide specific 1's, i.e., specific places where the person did sample some song. 
+   The things is: If you say, recommend these 10 items, and look up whether the person actually did, there's no way. It's too sparse. 
+   So say, we mask 1/10 of the actual samples. 4th Disciple samples 120, we mask 12 of his. How high were the scores of those for 4th Disciple?
+
+   2. Create roc CURVE
+   2. calculate what the mean AUC would have been if we had simply recommended the most popular items
+
+   4. Maybe also do it by time. Because the way Jesse does it makes it artificially harder. He says:
+      1. fold in technique
+      2. implicit library has support for this aparanelt
 
 5. Other features of songs, to recommend outside of the who_sampled. 
 
@@ -218,6 +233,10 @@ Through Spotify API, we can get audio features for any song, like so: `GET https
 7. [Song similarity matrix using features from songs](http://cs229.stanford.edu/proj2017/final-reports/5218770.pdf)
 
 8. [sample spotify work](https://medium.com/@chris.m.pease/automating-finding-music-samples-on-spotify-with-whosampled-54f86bcda1ee)
+
+9. [implicit library](https://github.com/benfred/implicit)
+
+10. [VERY helpful recommender testing](https://jessesw.com/Rec-System/)
 
 ## Other Crazy Ideas
 
