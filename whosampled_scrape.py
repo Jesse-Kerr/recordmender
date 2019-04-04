@@ -172,7 +172,7 @@ class Scraper():
         
     def insert_song_sample_info_into_db_main(self, song_sample_page):
         self.driver.get(song_sample_page)
-        sleep(2)
+        #sleep(2)
         self.driver.implicitly_wait(0)
 
         try:
@@ -183,7 +183,10 @@ class Scraper():
              /div[@class = 'track-metainfo-wrapper']\
              /div[@class='track-metainfo']\
             /span[@itemprop='producer']/a/span")
-            new_producer_list = [producer.get_attribute('innerHTML') for producer in new_producer_list]
+            if len(new_producer_list) > 0:
+                new_producer_list = [producer.get_attribute('innerHTML') for producer in new_producer_list]
+            else: 
+                new_producer_list = ["None Listed"]
         except:
             new_producer_list = ["None Listed"]
             

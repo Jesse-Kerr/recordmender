@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 client = MongoClient()
 db = client.whosampled
+from time import sleep
 
 from whosampled_scrape import Scraper
 
@@ -16,5 +17,6 @@ if __name__ == "__main__":
         except:
             print("Insertion into Mongo failed for {}".format(song_sample_page))
             failed_links.append(song_sample_page)
+        sleep(7)
     print(failed_links)
     scraper.driver.quit()
