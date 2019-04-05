@@ -13,8 +13,13 @@ _, utility_to_artist, _ = from_mongo_collection_to_utility_matrix(db.main_redo)
 utility_to_artist_sparse = sparse.csr_matrix(utility_to_artist.T)
 
 from make_train_set import make_train
-train_set, test_set, user_rows_altered = make_train(utility_to_artist_sparse)
+train_set, test_set, user_rows_altered = make_train(utility_to_artist_sparse, 0.05)
 
+alpha = 15
+user_vecs, item_vecs = implicit.alternating_least_squares((train_set*alpha).astype('double'), 
+                                                          factors=20, 
+                                                          regularization = 0.1, 
+                                                         iterations = 50)
 def auc_score(predictions, test):
     '''
     This simple function will output the area under the curve using sklearn's metrics. 
@@ -55,7 +60,7 @@ def calc_mean_auc(training_set, altered_users, predictions, test_set):
     '''
 
     store_auc = [] # An empty list to store the AUC for each user that had an item removed from the training set
-    popularity_auc = [] # To store popular AUC scores
+    popularity_auc = [] # To store popular AUC scores #this here tells you how many times each item was sampled.
     pop_items = np.array(test_set.sum(axis = 0)).reshape(-1) # Get sum of item iteractions to find most popular
     item_vecs = predictions[1]
     for user in altered_users: # Iterate through each user that had an item altered
@@ -77,11 +82,4 @@ def calc_mean_auc(training_set, altered_users, predictions, test_set):
     return float('%.3f'%np.mean(store_auc)), float('%.3f'%np.mean(popularity_auc))  
    # Return the mean AUC rounded to three decimal places for both test and popularity benchmark
 
-
-alpha = 15
-user_vecs, item_vecs = implicit.alternating_least_squares((train_set*alpha).astype('double'), 
-                                                          factors=20, 
-                                                          regularization = 0.1, 
-                                                         iterations = 50)
-
-calc_mean_auc(train_set, user_rows_altered, sparse.csr_matrix(user_vecs), test_set)
+print(calc_mean_auc(train_set, user_rows_altered, [sparse.csr_matrix(user_vecs), sparse.csr_matrix(item_vecs.T)], test_set))

@@ -74,7 +74,7 @@ I am trying to create a recommendation engine for music producers, mainly hip ho
    be my only chance to get data on them. - [ ]
 
 ### Notes:
-Going to start 3.1 while 1.2.2 still running. 3.1 will only run on the first _ of 1.2.2, and do the rest later. 
+1. Going to start 3.1 while 1.2.2 still running. 3.1 will only run on the first _ of 1.2.2, and do the rest later. 
 
 When I run 3.1 again with rest of data, use:
 
@@ -87,6 +87,9 @@ Then in  insert_links_to_song_sample_pages, put:
         "query": {"dj": {"$nin": done_djs s}}, 
         "key":"track_links"}) 
 
+2. Understanding auc_testing code. 
+
+He is calculating the AUC for all the users who had a value changed. 
 ### The steps of the project:
 
 1. Scrape whosampled.com for, say, 1000 producers. We want a list of all the songs each producer has ever sampled (see **Whosampled Dataset** section below for more detail on this database schema).
@@ -237,6 +240,8 @@ Through Spotify API, we can get audio features for any song, like so: `GET https
 9. [implicit library](https://github.com/benfred/implicit)
 
 10. [VERY helpful recommender testing](https://jessesw.com/Rec-System/)
+
+11. [How to test recommender capstone Michael](https://www.youtube.com/watch?v=0PxmAZunZog&list=PLxtztEze-DRfCd2LY4IRytALcjpJQp0WC&index=2)
 
 ## Other Crazy Ideas
 

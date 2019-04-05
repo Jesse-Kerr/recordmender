@@ -47,3 +47,4 @@ def make_train(ratings, pct_test = 0.2):
     training_set[user_inds, item_inds] = 0 # Assign all of the randomly chosen user-item pairs to zero
     training_set.eliminate_zeros() # Get rid of zeros in sparse array storage after update to save space
     return training_set, test_set, list(set(user_inds)) # Output the unique list of user rows that were altered 
+
