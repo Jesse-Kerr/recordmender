@@ -59,7 +59,7 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
     df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
 
     # make_util(utility_matrix, df)
-    utility_to_song = pd.crosstab(df['new_song_producer'], columns=df.sampled_artist_song)
+    utility_to_song = pd.crosstab(df.sampled_artist_song, columns=df.new_song_producer)
     utility_to_artist = pd.crosstab(df.sampled_artist, columns=df.new_song_producer )
 
     #utility_to_artist.set_index('new_song_producer', inplace = True)
