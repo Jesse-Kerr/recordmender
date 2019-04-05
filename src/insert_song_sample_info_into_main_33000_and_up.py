@@ -10,7 +10,7 @@ if __name__ == "__main__":
     scraper = Scraper()
     failed_links = []
     song_sample_pages = db.song_sample_pages.distinct('link')
-    start = song_sample_pages.index("https://www.whosampled.com/sample/55560/Skyzoo-Torae-Get-It-Done-Akrobatik-B-Real-A-to-the-K/")
+    start = song_sample_pages.index("https://www.whosampled.com/sample/58616/G-Unit-Get-Down-Blood,-Sweat-%26-Tears-Spinning-Wheel/")
 
     for song_sample_page in song_sample_pages[start:]: 
         try:

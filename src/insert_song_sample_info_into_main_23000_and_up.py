@@ -9,7 +9,7 @@ if __name__ == "__main__":
     scraper = Scraper()
     failed_links = []
     song_sample_pages = db.song_sample_pages.distinct('link')
-    start = song_sample_pages.index("https://www.whosampled.com/sample/300563/Lil-B-Im-Online-BASED-FREESTYLE-HIT-Leona-Lewis-Bleeding-Love/")
+    start = song_sample_pages.index("https://www.whosampled.com/sample/88743/Kool-G-Rap-%26-DJ-Polo-Cold-Cuts-Dennis-Coffey-Ride-Sally-Ride/")
     for song_sample_page in song_sample_pages[start:33000]:
         try:
             scraper.insert_song_sample_info_into_db_main(song_sample_page)
