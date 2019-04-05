@@ -3,23 +3,26 @@ import numpy as np
 import scipy.sparse as sparse
 import implicit
 
-from pymongo import MongoClient
-client = MongoClient()
-db = client.whosampled
+# The imports below this are only necessary if running in the VScode environment, not in 
+# Jupyter notebook
 
-from turn_db_main_into_utility_matrix import from_mongo_collection_to_utility_matrix
-_, utility_to_artist, _ = from_mongo_collection_to_utility_matrix(db.main_redo)
+# from pymongo import MongoClient
+# client = MongoClient()
+# db = client.whosampled
 
-utility_to_artist_sparse = sparse.csr_matrix(utility_to_artist.T)
+# from turn_db_main_into_utility_matrix import from_mongo_collection_to_utility_matrix
+# _, utility_to_artist, _ = from_mongo_collection_to_utility_matrix(db.main_redo)
 
-from make_train_set import make_train
-train_set, test_set, user_rows_altered = make_train(utility_to_artist_sparse, 0.05)
+# utility_to_artist_sparse = sparse.csr_matrix(utility_to_artist.T)
 
-alpha = 15
-user_vecs, item_vecs = implicit.alternating_least_squares((train_set*alpha).astype('double'), 
-                                                          factors=20, 
-                                                          regularization = 0.1, 
-                                                         iterations = 50)
+# from make_train_set import make_train
+# train_set, test_set, user_rows_altered = make_train(utility_to_artist_sparse, 0.05)
+
+# alpha = 15
+# user_vecs, item_vecs = implicit.alternating_least_squares((train_set*alpha).astype('double'), 
+#                                                           factors=20, 
+#                                                           regularization = 0.1, 
+#                                                          iterations = 50)
 def auc_score(predictions, test):
     '''
     This simple function will output the area under the curve using sklearn's metrics. 
@@ -82,4 +85,4 @@ def calc_mean_auc(training_set, altered_users, predictions, test_set):
     return float('%.3f'%np.mean(store_auc)), float('%.3f'%np.mean(popularity_auc))  
    # Return the mean AUC rounded to three decimal places for both test and popularity benchmark
 
-print(calc_mean_auc(train_set, user_rows_altered, [sparse.csr_matrix(user_vecs), sparse.csr_matrix(item_vecs.T)], test_set))
+#print(calc_mean_auc(train_set, user_rows_altered, [sparse.csr_matrix(user_vecs), sparse.csr_matrix(item_vecs.T)], test_set))
