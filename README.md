@@ -1,6 +1,6 @@
 # Recordmend
 
-## What are you trying to do? Articulate your objectives using absolutely no jargon (i.e. as if you were explaining to a salesperson, executive, or recruiter).
+## What are you trying to do? Articulate your objectives using absolutely no jargon (i.e. as if you were explaining to a salesperson, executive, or recruiter)
 
 I am trying to create a recommendation engine for music producers, mainly hip hop producers, that will recommend songs for them to sample (i.e., use parts of the song in their own beats), based off of the previous songs they've sampled. It will recommend songs that are similar to what they have already sampled but that have been sampled much less frequently in total. It may also take into account the beats they've produced, their self-reported beat-making style, and other factors about the sample songs to make recommendations.
 
@@ -238,10 +238,15 @@ Through Spotify API, we can get audio features for any song, like so: `GET https
 8. [sample spotify work](https://medium.com/@chris.m.pease/automating-finding-music-samples-on-spotify-with-whosampled-54f86bcda1ee)
 
 9. [implicit library](https://github.com/benfred/implicit)
+https://implicit.readthedocs.io/en/latest/ann.html
 
 10. [VERY helpful recommender testing](https://jessesw.com/Rec-System/)
 
 11. [How to test recommender capstone Michael](https://www.youtube.com/watch?v=0PxmAZunZog&list=PLxtztEze-DRfCd2LY4IRytALcjpJQp0WC&index=2)
+
+12. [might need hybrid recommender](https://github.com/lyst/lightfm)
+
+
 
 ## Other Crazy Ideas
 

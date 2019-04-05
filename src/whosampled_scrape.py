@@ -4,6 +4,7 @@ import re
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
 chrome_options = Options()
 chrome_options.add_argument("--disable-extensions")
 chrome_options.add_argument("--disable-gpu")
@@ -94,6 +95,26 @@ class Scraper():
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
         #sleep(5)
+
+    def search_sampled_song_and_get_to_connections(self, sampled_song):
+        
+        '''
+        Inputs sampled_song into search bar and presses enter
+        '''
+        self.sampled_song = sampled_song
+        search = self.driver.find_element_by_id('searchInput')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
+        search.send_keys(self.sampled_song)
+        search.sendKeys(Keys.RETURN)
+        #sleep()
+
+        connections = self.driver.find_elements_by_link_text("Connections")
+        connections.click()
+
+    def get_all_connections_from_page(self):
+        connections = self.driver.find_elements_by_class_name('connectionTitle')
+        connections = [connection.get_attribute('href')for connection in connections]
+        return connections
 
     def filter_page_by_songs_artist_sampled(self):
 
@@ -328,3 +349,5 @@ class Scraper():
                               for producer in new_producer_list])
 
         self.driver.implicitly_wait(10)
+    
+    
