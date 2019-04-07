@@ -380,7 +380,7 @@ class Scraper():
         Inputs sampled_song into search bar and presses enter
         '''
 
-        #Ampersands mess with the search function.
+        #Ampersands, hashtags, plusses and semicolons mess with the search function.
         user_input = re.sub('&|#|\+|;', '', user_input)
         search = self.driver.find_element_by_id('searchInput')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", search)

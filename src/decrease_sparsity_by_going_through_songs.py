@@ -76,7 +76,7 @@ if __name__ == "__main__":
         #Add this song into the exhaustive list
         db.exhaustive_sampled_songs.insert({'sampled_song': sampled_song})
         print("Done with {}".format(sampled_song))
-        sleep(4)
+        sleep(3)
         #Producer section
 
         # producers_to_do = scraper.get_producers_to_do() 
