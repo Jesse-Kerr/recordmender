@@ -10,6 +10,8 @@ chrome_options.add_argument("--disable-extensions")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--headless")
 
+from turn_db_main_into_utility_matrix import from_mongo_collection_to_utility_matrix
+
 from pymongo import MongoClient
 client = MongoClient()
 db = client.whosampled
@@ -96,26 +98,6 @@ class Scraper():
         artist.click()
         #sleep(5)
 
-    def search_sampled_song_and_get_to_connections(self, sampled_song):
-        
-        '''
-        Inputs sampled_song into search bar and presses enter
-        '''
-        self.sampled_song = sampled_song
-        search = self.driver.find_element_by_id('searchInput')
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
-        search.send_keys(self.sampled_song)
-        search.sendKeys(Keys.RETURN)
-        #sleep()
-
-        connections = self.driver.find_elements_by_link_text("Connections")
-        connections.click()
-
-    def get_all_connections_from_page(self):
-        connections = self.driver.find_elements_by_class_name('connectionTitle')
-        connections = [connection.get_attribute('href')for connection in connections]
-        return connections
-
     def filter_page_by_songs_artist_sampled(self):
 
         '''
@@ -148,28 +130,33 @@ class Scraper():
         db.dj_meta_info.insert_one({"dj" : self.dj, "num_samples" : num_samples})
         print("{} has {} samples, inserted into Mongo.".format(self.dj, num_samples))
 
-    def get_link_to_tracks_by_dj_insert_mongo(self):
+    def get_link_to_tracks_by_dj(self):
         '''
         Gets the links to the tracks for the DJ on that page (10 at most)
         '''
         tracks = self.driver.find_elements_by_xpath("//h3[@class='trackName']/a")
         track_links = [track.get_attribute('href') for track in tracks]
-
+        return track_links
         #insert into MongoDB
-        db.links_to_tracks_per_dj.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}}, upsert= True)    
-        print("{} links inserted into Mongo".format(len(track_links)))
+        # db.coll.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}}, upsert= True)    
+        #print("{} links".format(len(track_links)))
 
     def go_to_next_who_sampled_page(self):
+
+        #Set implicit wait to low here, because we know it is likely not to find it
+        self.driver.implicitly_wait(1)
         next_page = self.driver.find_elements_by_class_name("next")
         if len(next_page) > 0:
             next_page = next_page[0]
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
             #sleep(10)
             next_page.click()
-            #sleep(10)
+            #sleep(8)
         else:
             print("No more pages")    
             self.more_who_sampled_pages = False
+        self.driver.implicitly_wait(60)
+
 
     def get_and_insert_links_to_song_sample_songs(self, song_page):    
 
@@ -349,5 +336,86 @@ class Scraper():
                               for producer in new_producer_list])
 
         self.driver.implicitly_wait(10)
-    
-    
+
+    def init_exhaustive_dbs(self):
+        '''
+        Creates db.exhaustive_producers and db.exhaustive_sampled_songs.
+        db.exhaustive_producers has the producers which have been finished. 
+        At start, it's just the 692 djs from wikipedia (assumption).  
+        
+        db.exhaustive_sampled_songs is all of the songs we have entirely finished.
+        At beginning, it's empty.
+        '''
+
+        djs = self.get_all_wiki_djs()
+        db.exhaustive_producers.insert_many([{'dj': dj} for dj in djs])    
+
+        db.create_collection('exhaustive_sampled_songs')
+
+    def get_sampled_songs_to_do(self):
+        
+        #Get the list of sampled_songs that appear in the df. 
+        _, _, df = from_mongo_collection_to_utility_matrix(db.main_redo)
+        sampled_songs_in_df = df.sampled_artist_song.unique()
+        
+        # Check that we will only do the songs which are not in db.exhaustive_sampled_songs
+        sampled_songs_to_do = [sampled_song for sampled_song in sampled_songs_in_df if sampled_song not in set(db.exhaustive_sampled_songs.distinct('sampled_song'))]
+
+        return sampled_songs_to_do
+
+    def get_producers_to_do(self):
+        
+        #Get the list of sampled_songs that appear in the df. 
+        _, _, df = from_mongo_collection_to_utility_matrix(db.main_redo)
+        producers_in_df = df.new_song_producer.unique()
+        
+        # Check that we will only do the songs which are not in db.exhaustive_producers
+        producers_to_do = [prod for prod in producers_in_df if prod not in set(db.exhaustive_producers.distinct('dj'))]
+
+        return producers_to_do 
+
+    def get_to_connections_page_for_input(self, user_input):
+        
+        '''
+        Inputs sampled_song into search bar and presses enter
+        '''
+
+        #Ampersands mess with the search function.
+        user_input = re.sub('&|#|\+|;', '', user_input)
+        search = self.driver.find_element_by_id('searchInput')
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
+        search.send_keys(user_input)
+        search.send_keys(Keys.RETURN)
+        
+        # Decrease implicitly wait for Try/ Except because I know this is likely to fail
+        self.driver.implicitly_wait(0)
+
+        # If I run find_elements, it has length of 1, which is good.
+        try:
+
+            connections = self.driver.find_element_by_link_text("Connections")
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", connections)
+            connections.click()
+            print("At {} page".format(user_input))
+            self.has_connections = True
+        except:
+            self.has_connections = False
+        #sleep(5)
+        
+        self.driver.implicitly_wait(10)
+
+    def get_all_tracks_from_page(self):
+        connections = self.driver.find_elements_by_xpath("//span[@class = 'connectionTitle']/a")
+        connections = [connection.get_attribute('href') for connection in connections]
+        return connections
+
+    def get_tracks_from_page_not_done(self, tracks_that_sampled_song):
+        '''
+        Limit tracks_that_samples_song by checking that it's not in song_sample_pages
+        '''
+        #Get the list of song_sample_pages already in db.song_sample_pages.
+        # If they're here, it means we've already covered them or are in the process. 
+        
+        song_sample_pages = set(db.song_sample_pages.distinct('link'))
+        tracks_not_done = [track for track in tracks_that_sampled_song if track not in song_sample_pages]
+        return tracks_not_done

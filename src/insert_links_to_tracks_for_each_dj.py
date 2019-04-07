@@ -14,7 +14,7 @@ if __name__ == "__main__":
             scraper.filter_page_by_songs_artist_sampled()
             scraper.get_num_samples_insert_mongo()
             while scraper.more_who_sampled_pages == True:
-                scraper.get_link_to_tracks_by_dj_insert_mongo()
+                scraper.get_link_to_tracks_by_dj()
                 scraper.go_to_next_who_sampled_page()
         except:
             print("{} was unsuccessful!".format(dj))

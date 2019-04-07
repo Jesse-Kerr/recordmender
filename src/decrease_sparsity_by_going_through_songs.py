@@ -16,7 +16,7 @@ To make this exhaustive, we:
 db.song_sample_pages is our exhaustive list of links which we are running through 
 step by step. 
 
-4. Insert sampled_songs into db.exhaustive_sample_songs
+4. Insert sampled_songs into db.exhaustive_sampled_songs
 
 5. Insert producers into db.exhaustive_producers
 
@@ -30,57 +30,89 @@ from time import sleep
 from whosampled_scrape import Scraper
 
 if __name__ == "__main__":
-    
+
     scraper = Scraper()
-    djs = scraper.get_all_wiki_djs()
 
-    #db.exhaustive producers tracks which producers have been finished. 
-    # At start, it's just the 692 djs from wikipedia (assumption).
-    db.exhaustive_producers.insert_many(djs)    
+    #On the first step we needed to init_exhaustive, but not after that.
+    #scraper.init_exhaustive_dbs()
+
+    sampled_songs_to_do = scraper.get_sampled_songs_to_do() 
     
-    # db.exhaustive_sampled_songs is all of the songs we have entirely finished.
-    # at beginning, it's empty.
-    db.create_collection(exhaustive_sampled_songs)
+    # Head to the home page to start working
 
-    while jesse_says_go:
+    #Search each sampled_song in sampled_songs_in_df. 
+    for sampled_song in sampled_songs_to_do:
 
-        #Get the list of sampled_songs that appear in the df that we need to go through. 
-        _, _, df = from_mongo_collection_to_utility_matrix(db.main_redo)
-        sampled_songs_in_df = df.sampled_artist_song.unique()
+        scraper.go_to_who_sampled_home_page()
 
-        set(db.exhaustive_sample_songs.find())
-        #Search each sampled_song in sampled_songs_in_df. 
-        for sampled_song in sampled_songs_in_df:
-            scraper.go_to_who_sampled_home_page()
-            scraper.search_sampled_song_from_search_bar()
+        scraper.get_to_connections_page_for_input(sampled_song)
 
-            #Get the list of songs that sampled that song.
-            scraper.
-            #function here to go to page, insert info, get list.
-            #tracks_that_sampled_song = ##code here
-            tracks_not_done = [track for track in tracks_that_sampled_song if track not in song_sample_pages]
-            db.song_sample_pages_new.insert_many(tracks_that_sampled_song)
-            sleep(9)
+        #Sometimes the search input doesn't return anything- means move on. 
+        if scraper.has_connections:
+            
+            scraper.set_more_who_sampled_pages_true()
 
- 
-        # Get the list of song_sample_pages already in db.song_sample_pages.
-        # If they're here, it means we've already covered them or are in the process. 
-        song_sample_pages = db.song_sample_pages.distinct('link')
+            #Initialize empty list to hold the tracks_that_sampled_song        
+            total_tracks = []        
 
-        # Go through song_sample_pages_new running insert_song_sample_info_into_main_template
-        song_sample_pages_new = db.song_sample_pages_new.distinct('link')
-        for new_song_sample_page in song_sample_pages_new:
-            scraper.insert_song_sample_info_into_db_main(new_song_sample_page)
+            #As long as True, keep going
+            while scraper.more_who_sampled_pages == True:
+            
+                #Get the list of songs that sampled that song.
+                tracks_on_page = scraper.get_all_tracks_from_page()
+                total_tracks = total_tracks + tracks_on_page
+                scraper.go_to_next_who_sampled_page()
+                # sleep(3)
 
-        # Now that we're done with these pages, insert them all into song_sample_pages
-        db.song_sample_pages.insert_many(song_sample_pages_new)
-
-        #And drop them from the song_sample_pages_new db
-        db.song_sample_pages_new.drop()
-
-
-        ##Get the list of unique producers that already appear in the df
-        producers_in_df = df.new_song_producers.unique()
+            # Check whether the tracks on the page are in song_sample_pages]
+            tracks_not_done = scraper.get_tracks_from_page_not_done(total_tracks)
+            
+            #Add these into song_sample_pages
+            if len(tracks_not_done) > 0:
+                db.song_sample_pages.insert_many([{'link': track} for track in tracks_not_done])
+            
+            print("{} was sampled {} times, but we inserted only {} links".format(sampled_song, len(total_tracks), len(tracks_not_done)))
         
+        #Add this song into the exhaustive list
+        db.exhaustive_sampled_songs.insert({'sampled_song': sampled_song})
+        print("Done with {}".format(sampled_song))
+        sleep(4)
+        #Producer section
 
+        # producers_to_do = scraper.get_producers_to_do() 
+        
+        # #Search each sampled_song in sampled_songs_in_df. 
+        # for prod in producers_to_do:
+
+        #     # Head to the home page to start working
+        #     scraper.go_to_who_sampled_home_page()
+
+        #     #Initialize empty list to hold the tracks_sampled_by_prod
+        #     tracks_sampled_by_prod = []
+
+        #     #As long as True, keep going
+        #     scraper.set_more_who_sampled_pages_true()
+        #     scraper.go_to_dj_page(prod)
+        #     print("At {} page".format(prod))
+        #     scraper.filter_page_by_songs_artist_sampled()
+        #     tracks_by_dj = []
+        #     while scraper.more_who_sampled_pages == True:
+        #         track_links = scraper.get_link_to_tracks_by_dj()
+        #         tracks_by_dj = tracks_by_dj + track_links
+        #         scraper.go_to_next_who_sampled_page()
+    
+        #     # Check whether the tracks on the page are in song_sample_pages]
+        #     tracks_not_done = scraper.get_tracks_from_page_not_done(tracks_sampled_by_prod)
+
+        #     for track in tracks_not_done:
+        #         scraper.insert_song_sample_info_into_db_main(track)
+
+        #     #And add the sample_songs_to_do into the exhaustive list
+        #     db.song_sample_pages.insert_many([{'link': track} for track in tracks_not_done])
+        #     db.exhaustive_producers.insert({'dj': prod})
+        #     print("Done with {}".format(prod))
+
+        # # move iteration up 1
+        # i = i + 1
     scraper.driver.quit()
+
