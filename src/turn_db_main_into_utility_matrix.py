@@ -5,17 +5,6 @@ import re
 
 import pandas as pd
 
-def make_util(utility_matrix, df):
-    '''
-    Goes through the items in the nested utility matrix dictionary, checking whether 
-    their row name and column name exist together in df. If so, replaces that cell with a 1.
-    '''
-    for producer, songs in utility_matrix.items():
-        for song in songs:
-            cond1 = df.sampled_song_name == song
-            cond2 = df.new_song_producer == producer
-            if len(df[cond1 & cond2]) > 0:
-                utility_matrix[producer][song] = 1
                 
 def from_mongo_collection_to_utility_matrix(mongo_collection):
     '''
@@ -35,7 +24,9 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
 
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') & (df.sampled_song_name != 'None Listed')]
 
-    df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
+    #Need to remove this step for now. 
+    #df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
+
     # Make utility matrix: Get lists of producers and songs
     #sampled_songs = list(df.drop_duplicates('sampled_song_name')['sampled_song_name'])
     #new_song_producers = list(df.drop_duplicates('new_song_producer')['new_song_producer'])

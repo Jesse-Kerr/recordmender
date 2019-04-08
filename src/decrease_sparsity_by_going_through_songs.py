@@ -76,43 +76,7 @@ if __name__ == "__main__":
         #Add this song into the exhaustive list
         db.exhaustive_sampled_songs.insert({'sampled_song': sampled_song})
         print("Done with {}".format(sampled_song))
-        sleep(3)
-        #Producer section
+        sleep(2)
 
-        # producers_to_do = scraper.get_producers_to_do() 
-        
-        # #Search each sampled_song in sampled_songs_in_df. 
-        # for prod in producers_to_do:
-
-        #     # Head to the home page to start working
-        #     scraper.go_to_who_sampled_home_page()
-
-        #     #Initialize empty list to hold the tracks_sampled_by_prod
-        #     tracks_sampled_by_prod = []
-
-        #     #As long as True, keep going
-        #     scraper.set_more_who_sampled_pages_true()
-        #     scraper.go_to_dj_page(prod)
-        #     print("At {} page".format(prod))
-        #     scraper.filter_page_by_songs_artist_sampled()
-        #     tracks_by_dj = []
-        #     while scraper.more_who_sampled_pages == True:
-        #         track_links = scraper.get_link_to_tracks_by_dj()
-        #         tracks_by_dj = tracks_by_dj + track_links
-        #         scraper.go_to_next_who_sampled_page()
-    
-        #     # Check whether the tracks on the page are in song_sample_pages]
-        #     tracks_not_done = scraper.get_tracks_from_page_not_done(tracks_sampled_by_prod)
-
-        #     for track in tracks_not_done:
-        #         scraper.insert_song_sample_info_into_db_main(track)
-
-        #     #And add the sample_songs_to_do into the exhaustive list
-        #     db.song_sample_pages.insert_many([{'link': track} for track in tracks_not_done])
-        #     db.exhaustive_producers.insert({'dj': prod})
-        #     print("Done with {}".format(prod))
-
-        # # move iteration up 1
-        # i = i + 1
     scraper.driver.quit()
 

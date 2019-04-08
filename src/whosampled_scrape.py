@@ -82,14 +82,15 @@ class Scraper():
         Input: DJ (string)
         Returns: None
         '''
-        self.dj = dj
-
+        dj = re.sub('&amp;', 'and', dj)
+        dj = re.sub('-', ' ', dj)
+        
         # The search box. This is where we will input the dj to search.
         search = self.driver.find_element_by_id('searchInput')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
         #sleep(2)
-        search.send_keys(self.dj)
-        sleep(1)
+        search.send_keys(dj)
+        # sleep(1)
 
         #This opens the dropdown of different responses to our query. We
         #generally want to click on the first element in the dropdown.
@@ -134,17 +135,34 @@ class Scraper():
         '''
         Gets the links to the tracks for the DJ on that page (10 at most)
         '''
-        tracks = self.driver.find_elements_by_xpath("//h3[@class='trackName']/a")
+        tracks = self.driver.find_elements_by_xpath("//a[@class='connectionName playIcon']")
         track_links = [track.get_attribute('href') for track in tracks]
         return track_links
         #insert into MongoDB
         # db.coll.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}}, upsert= True)    
         #print("{} links".format(len(track_links)))
 
+    def get_links_for_songs_with_more_than_3_samples(self, all_links, all_nums):
+
+        self.driver.implicitly_wait(0)
+        
+        links = self.driver.find_elements_by_xpath("//a[@class='moreLink bordered-list moreConnections']")
+        if len(links) > 0:
+            track_links = [link.get_attribute('href') for link in links]
+            number_missed =[link.get_attribute('innerHTML') for link in links]
+            
+            #It's a string of text, extract the number out
+            number_missed = [int(number.split(" ")[1]) for number in number_missed]
+
+            return all_links + track_links, all_nums + number_missed
+        else:
+            return all_links, all_nums
+        self.driver.implicitly_wait(10)
+
     def go_to_next_who_sampled_page(self):
 
         #Set implicit wait to low here, because we know it is likely not to find it
-        self.driver.implicitly_wait(1)
+        self.driver.implicitly_wait(0)
         next_page = self.driver.find_elements_by_class_name("next")
         if len(next_page) > 0:
             next_page = next_page[0]
@@ -408,14 +426,3 @@ class Scraper():
         connections = self.driver.find_elements_by_xpath("//span[@class = 'connectionTitle']/a")
         connections = [connection.get_attribute('href') for connection in connections]
         return connections
-
-    def get_tracks_from_page_not_done(self, tracks_that_sampled_song):
-        '''
-        Limit tracks_that_samples_song by checking that it's not in song_sample_pages
-        '''
-        #Get the list of song_sample_pages already in db.song_sample_pages.
-        # If they're here, it means we've already covered them or are in the process. 
-        
-        song_sample_pages = set(db.song_sample_pages.distinct('link'))
-        tracks_not_done = [track for track in tracks_that_sampled_song if track not in song_sample_pages]
-        return tracks_not_done
