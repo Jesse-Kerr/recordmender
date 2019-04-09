@@ -3,21 +3,27 @@ from flask_pymongo import PyMongo
 from app import app
 from app.forms import LoginForm
 import pandas as pd
+from turn_db_main_into_utility_matrix import from_mongo_collection_to_utility_matrix
+import pickle
 
 app.config["MONGO_URI"] = "mongodb://localhost:27017/whosampled"
 mongo = PyMongo(app)
 
 @app.route("/", methods = ['GET', 'POST'])
 def dropdown():
-    df = pd.DataFrame(list(mongo.db.main_redo.find()))
+    _, artist_prod, df = from_mongo_collection_to_utility_matrix(mongo.db.main_redo)    
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') & (df.sampled_song_name != 'None Listed')]
     top_twenty_djs = list(df.groupby('new_song_producer').count()['URL'].sort_values(ascending = False)[:20].index)
     return render_template('test.html', djs=top_twenty_djs)
 
 @app.route("/submitted", methods = ['GET', 'POST'])
 def hello():
+    _, artist_prod, df = from_mongo_collection_to_utility_matrix(mongo.db.main_redo)    
     var = request.form.get("djs")
-    return render_template('index.html', var=var)
+    idx = artist_prod.get_loc(var)
+    model = pickle.load(open('model.pkl', 'rb'))  
+    recommendations = model.recommend(idx)
+    return render_template('index.html', var=recommendations)
 
 
 @app.route("/index")

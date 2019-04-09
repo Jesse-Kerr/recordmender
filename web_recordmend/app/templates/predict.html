@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Choose a Producer</h1>
+    <form class="djSelection" method="POST" action="/submitted">  
+        <select name= "djs" placeholder="Select A DJ">
+            {% for dj in djs %}
+            <option value= "{{dj}}" SELECTED>{{dj}}</option>"
+            {% endfor %}
+        </select>
+        <input class="btn" type="submit" value="submit">
+    </form>
+    </select>
+{% endblock %}
