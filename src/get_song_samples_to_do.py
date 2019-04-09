@@ -6,6 +6,7 @@ import numpy as np
 #Empty what we have, and check again.
 
 #db.song_sampled_pages_to_do.drop()
+db.song_sampled_pages_to_do.drop()
 
 df = pd.DataFrame(list(db.main_redo.find()))
 done_URLS = set(df.URL.unique())

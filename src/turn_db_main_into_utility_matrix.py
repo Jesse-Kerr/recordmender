@@ -25,7 +25,7 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') & (df.sampled_song_name != 'None Listed')]
 
     #Need to remove this step for now. 
-    #df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
+    df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
 
     # Make utility matrix: Get lists of producers and songs
     #sampled_songs = list(df.drop_duplicates('sampled_song_name')['sampled_song_name'])
@@ -53,6 +53,4 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
     utility_to_song = pd.crosstab(df.sampled_artist_song, columns=df.new_song_producer)
     utility_to_artist = pd.crosstab(df.sampled_artist, columns=df.new_song_producer )
 
-    #utility_to_artist.set_index('new_song_producer', inplace = True)
-    # utility2 = pd.DataFrame.from_dict(utility_matrix, orient = 'index')
     return utility_to_song, utility_to_artist, df
