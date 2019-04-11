@@ -174,6 +174,7 @@ class Scraper():
             print("No more pages")    
             self.more_who_sampled_pages = False
         self.driver.implicitly_wait(60)
+        #sleep(2.1)
 
 
     def get_and_insert_links_to_song_sample_songs(self, song_page):    
