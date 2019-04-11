@@ -33,24 +33,24 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
 
     # Make new dict with zeros everywhere using the columns and rows above.
     #utility_matrix = pd.DataFrame(0, index=sampled_songs, columns= new_song_producers).to_dict()
-    df.sampled_song_name = df.sampled_song_name\
-    .apply(lambda x: x.strip())\
-    .apply(lambda x: x.lower())\
-    .apply(lambda x: re.sub('\(.* version\)$|instrumental$', '', x))\
-    .apply(lambda x: re.sub('\(live\)|\(.* remix\)', '', x))\
-    .apply(lambda x: re.sub('\(version .*', '', x))\
-    .apply(lambda x: re.sub('\(|\)|"|\'', '', x))\
-    .apply(lambda x: re.sub('-', ' ', x))\
-    .apply(lambda x: x.strip())\
-    .apply(lambda x: re.sub(' +', ' ', x))
+    # df.sampled_song_name = df.sampled_song_name\
+    # .apply(lambda x: x.strip())\
+    # .apply(lambda x: x.lower())\
+    # .apply(lambda x: re.sub('\(.* version\)$|instrumental$', '', x))\
+    # .apply(lambda x: re.sub('\(live\)|\(.* remix\)', '', x))\
+    # .apply(lambda x: re.sub('\(version .*', '', x))\
+    # .apply(lambda x: re.sub('\(|\)|"|\'', '', x))\
+    # .apply(lambda x: re.sub('-', ' ', x))\
+    # .apply(lambda x: x.strip())\
+    # .apply(lambda x: re.sub(' +', ' ', x))
 
     df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
     
     #Create new column with both sampled_artist and sampled_name    
-    df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
+    #df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
 
     # make_util(utility_matrix, df)
     utility_to_song = pd.crosstab(df.sampled_artist_song, columns=df.new_song_producer)
-    utility_to_artist = pd.crosstab(df.sampled_artist, columns=df.new_song_producer )
+    prod_artist = pd.crosstab(df.new_song_producer, df.sampled_artist)
 
-    return utility_to_song, utility_to_artist, df
+    return utility_to_song, prod_artist, df
