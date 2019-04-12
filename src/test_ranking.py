@@ -28,6 +28,7 @@ def clean_up_mongo_coll(mongo_coll):
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
     df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
     df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
+    df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
     return df
 
 def turn_df_to_util_mat_at_limits(df, col1, col2, lim_col1 = None, lim_col2 = None):
@@ -167,7 +168,7 @@ def get_pop_rank_ui(test, item_inds):
     return pop_rank_ui
 
 def get_rank_and_pop_score_from_train_test_model(
-    train, test, user_inds, item_inds, factors = 12, regularization = 0.01, iterations = 15):
+    train, test, user_inds, item_inds, factors = 12, regularization = 0.5, iterations = 50):
     '''
     Takes a train and test set, and its indices, and fits a ALS model to the train set.
     Returns rank_scores for the model and popularity(baseline)
