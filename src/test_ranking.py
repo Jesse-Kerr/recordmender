@@ -28,6 +28,18 @@ def clean_up_mongo_coll(mongo_coll):
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
     df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
     df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
+
+    df.sampled_song_name = df.sampled_song_name\
+    .apply(lambda x: x.strip())\
+    .apply(lambda x: x.lower())\
+    .apply(lambda x: re.sub('\(.* version\)$|instrumental$', '', x))\
+    .apply(lambda x: re.sub('\(live\)|\(.* remix\)', '', x))\
+    .apply(lambda x: re.sub('\(version .*', '', x))\
+    .apply(lambda x: re.sub('\(|\)|"|\'', '', x))\
+    .apply(lambda x: re.sub('-', ' ', x))\
+    .apply(lambda x: x.strip())\
+    .apply(lambda x: re.sub(' +', ' ', x))
+
     df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
     return df
 
@@ -203,3 +215,29 @@ def get_pop_rank_score(test, item_inds, rui, denominator):
     pop_rank_ui = get_pop_rank_ui(test, item_inds)
     pop_rank_score = get_rank_score(rui, pop_rank_ui, denominator)
     return pop_rank_score
+
+def get_rank_and_pop_score_of_two_columns(df, col1, col2, split_pct, factors = 4, regularization = 70, iterations = 50):
+    
+    '''
+    Input: 
+        Col1: Users
+        Col2: Items
+        Df: Dataframe to get columns data from
+        Split.pct: % of data to send to hide for testing.
+        Factors, regularization, iterations: Parameters for the ALS algorithm
+        
+    Returns: Rank_score and pop_score of those two columns
+    '''
+    
+    user_item = turn_df_to_util_mat_at_limits(
+            df, col1, col2)
+
+    user_inds, item_inds = get_indices_of_test_set_values(user_item, split_pct)
+
+    train, test = make_train_set_and_test_set(user_inds, item_inds, user_item)
+
+    rank_score, pop_rank_score = get_rank_and_pop_score_from_train_test_model(
+        train, test, user_inds, item_inds, factors, regularization ,iterations)
+    
+    return rank_score, pop_rank_score
+
