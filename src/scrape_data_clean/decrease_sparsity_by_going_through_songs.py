@@ -21,7 +21,7 @@ step by step.
 5. Insert producers into db.exhaustive_producers
 
 '''
- 
+import pandas as pd
 from pymongo import MongoClient
 client = MongoClient()
 db = client.whosampled
@@ -30,15 +30,22 @@ from time import sleep
 from whosampled_scrape import Scraper
 
 if __name__ == "__main__":
-
-    scraper = Scraper()
-
-    #On the first step we needed to init_exhaustive, but not after that.
-    #scraper.init_exhaustive_dbs()
-
-    sampled_songs_to_do = scraper.get_sampled_songs_to_do() 
     
-    # Head to the home page to start working
+    # Get list of all the sampled_artist_songs we have in the dataframe.
+    df = pd.DataFrame(list(db.main_redo.find()))
+    df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
+    song_sampled_in_df = set(df.sampled_artist_song.unique())
+
+    #Get list of all the songs we have left to go through, by taking the difference
+    # of the db that has the exhaustive sampled songs.    
+    sampled_songs_to_do = song_sampled_in_df.difference(set(db.exhaustive_sampled_songs.distinct('sampled_song')))
+    
+    # Get list of all the song sample pages we've already collected. 
+    song_sample_pages = db.song_sample_pages.find({}, {"link": 1, "_id": 0})
+    song_sample_pages = set([element['link'] for element in song_sample_pages])
+
+    #initialize scraper
+    scraper = Scraper()
 
     #Search each sampled_song in sampled_songs_in_df. 
     for sampled_song in sampled_songs_to_do:
@@ -63,9 +70,9 @@ if __name__ == "__main__":
                 total_tracks = total_tracks + tracks_on_page
                 scraper.go_to_next_who_sampled_page()
                 # sleep(3)
-
+            total_tracks = set(total_tracks)
             # Check whether the tracks on the page are in song_sample_pages]
-            tracks_not_done = scraper.get_tracks_from_page_not_done(total_tracks)
+            tracks_not_done = total_tracks.difference(song_sample_pages)
             
             #Add these into song_sample_pages
             if len(tracks_not_done) > 0:
@@ -76,7 +83,7 @@ if __name__ == "__main__":
         #Add this song into the exhaustive list
         db.exhaustive_sampled_songs.insert({'sampled_song': sampled_song})
         print("Done with {}".format(sampled_song))
-        sleep(2)
+        sleep(3.8)
 
     scraper.driver.quit()
 

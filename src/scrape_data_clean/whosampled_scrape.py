@@ -374,7 +374,7 @@ class Scraper():
     def get_sampled_songs_to_do(self):
         
         #Get the list of sampled_songs that appear in the df. 
-        _, _, df = from_mongo_collection_to_utility_matrix(db.main_redo)
+        _, df = from_mongo_collection_to_utility_matrix(db.main_redo)
         sampled_songs_in_df = df.sampled_artist_song.unique()
         
         # Check that we will only do the songs which are not in db.exhaustive_sampled_songs

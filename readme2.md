@@ -104,15 +104,17 @@ A Selenium class was created to scrape the data from whosampled.com
 
 ## Making model better
 
-We found that lower # of factors lead to a better rank score.
+We found that lower # of factors lead to a better rank score. 12 worked the best.
 
+Different regularization values of lambda were tried from 0.01 to 1000.
 
+Different numbers of iterations from 10 to 210, in steps of 40. 
+
+With these best values, different numbers of artists sampled and producers were tried.
+
+Specific elements sampled were also examined.
 #Specific to do's for Thursday/ Friday
 1. Look at none listed for new song producer. Consider replacing with new_song_artist
-
-2. Split by vocals/lyrics versus others types. [x]
-
-2. Limit your recommender to > # producers, > # songs. [x]
 
 3. Examine features of model. Clustering of items. Recommendations. 
 
