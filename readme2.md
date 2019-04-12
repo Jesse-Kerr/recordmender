@@ -98,21 +98,24 @@ A Selenium class was created to scrape the data from whosampled.com
 
 ## EDA
 
-![x](Distribution_of_Song_Sample_Years.jpg)
+![x](images/Distribution_of_Song_Sample_Years.jpg)
 
-![x](Distribution_of_Sample_Types.png)
+![x](images/Distribution_of_Sample_Types.png)
+
+## Making model better
+
+We found that lower # of factors lead to a better rank score.
+
 
 #Specific to do's for Thursday/ Friday
 1. Look at none listed for new song producer. Consider replacing with new_song_artist
 
-2. Split by vocals/lyrics versus others types.
+2. Split by vocals/lyrics versus others types. [x]
 
-2. Limit your recommender to > # producers, > # songs.
+2. Limit your recommender to > # producers, > # songs. [x]
 
 3. Examine features of model. Clustering of items. Recommendations. 
 
 4. Try with prod_song dataset.
-
-5. Consider alpha values. Grid search lambda
 
 Make a playlist of the 6game on whosampled- it takes a random progression through music.

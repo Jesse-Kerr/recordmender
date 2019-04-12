@@ -166,14 +166,16 @@ def get_pop_rank_ui(test, item_inds):
     
     return pop_rank_ui
 
-def get_rank_and_pop_score_from_train_test_model(train, test, user_inds, item_inds, factors):
+def get_rank_and_pop_score_from_train_test_model(
+    train, test, user_inds, item_inds, factors = 12, regularization = 0.01, iterations = 15):
     '''
     Takes a train and test set, and its indices, and fits a ALS model to the train set.
     Returns rank_scores for the model and popularity(baseline)
     '''
     
     #initialize a new model
-    train_model = implicit.als.AlternatingLeastSquares(factors=factors,iterations=15)
+    train_model = implicit.als.AlternatingLeastSquares(
+        factors=factors, iterations=iterations, regularization= regularization)
 
     # train the model on a sparse matrix of user/item/confidence weights
     sparse_train = csr_matrix(train)
