@@ -25,13 +25,13 @@ Recordmend is a tool for hip hop producers that recommends new songs for them to
 
 ## Rationale
 
-Digging in the crates. Sampling. Flipping. These are the terms for repurposing an old song as part of a new one, but none truly describe its thrill. It's the feeling of uncovering an unknown gem, 
+Digging in the crates. Sampling. Flipping. Finding a gem in an old song to repurpose in a new one can be quite the thrill. It's like uncovering unburied treasure or an unknown gem.
 
 Underlying discovery, however, is a whole lot of searching, meaning listening to song after song, trying to find the buried treasure. 
 
-[Madlib](https://en.wikipedia.org/wiki/Madlib)
-
 ![https://www.stonesthrow.com/madlib/](images/madlib_records.jpg)
+
+[Madlib](https://en.wikipedia.org/wiki/Madlib)
 
 While the search is certainly one of the best parts of finding treasure, most searchers at least bring a map. This is where recordmender comes in.
 
@@ -41,7 +41,7 @@ A utility matrix $R$ was constructed, with `producers vector` $p$ rows and sampl
 
 I used data from whosampled.com to construct the matrix.
 
-Singular Value Decomposition is a latent factor model which causes dimensionality reduction. Two matrices are created, a user-factor matrix and an item-factor matrix, where the factor represents the number of latent factors in the data. The dot product of these matrices attempts to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
+Singular Value Decomposition is a latent factor model which causes dimensionality reduction. Two matrices are created, a user-factor matrix and an item-factor matrix, where the factor represents the number of latent factors in the data. The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
 
 
 $\underset{x,y}min\underset{u,i}\sum 
@@ -68,9 +68,44 @@ In practice, however, stochastic gradient descent is impossible in implicit feed
 
 ## ALS
 
+Therefore we modify the cost function to Alternating Least Squares, which works by holding either user vectors or item vectors constant and calculating the global minimum, then alternating to the other vector.
+
+### Compute User factors
+$x_u = (Y^T C^u Y + \lambda I)^{-1}  Y^T C^u p(u)$
+
+##### Where:
+
+$Y$ is $n * f$ matrix of item-factors. 
+
+$C^u$ is a $n*n$ diagonal matrix for user $u$ where $C^u_{ii} = c_{ui}$. Each $C^u$ is our confidence matrix for $n$ items for $u$ user.
+
+$p(u)$ is vector of preferences for user $u$.
+
+### Recompute Item factors
+
+$y_i = (X^TC^iX + \lambda I)^-1 X^TC^ip(i)$
+
+##### Where:
+$X$ = $m * f$ matrix  of user_factors. 
+
+$C^i$ is $m * m$ diagonal matrix for each item $i$ where $C_{uu}^i = c_{ui}$
+
+$p(i)$ is vector of preferences for item $i$.
+
+## Data Collection
+
+A Selenium class was created to scrape the data from whosampled.com
+
+## EDA
+
+![x](Distribution_of_Song_Sample_Years.jpg)
+
+![x](Distribution_of_Sample_Types.png)
 
 #Specific to do's for Thursday/ Friday
 1. Look at none listed for new song producer. Consider replacing with new_song_artist
+
+2. Split by vocals/lyrics versus others types.
 
 2. Limit your recommender to > # producers, > # songs.
 

@@ -15,6 +15,34 @@ os.environ["OPENBLAS_NUM_THREADS"]="1"
 import random
 import re
 
+def clean_up_mongo_coll(mongo_coll):
+
+    '''
+    Takes a mongo collection. Removes duplicates, instances where producer or artist
+    are not listed. Cleans up sampled artist.
+
+    Returns df
+    '''
+    df=pd.DataFrame(list(db.main_redo.find()))
+    df = df.drop_duplicates(['URL', 'new_song_producer'])
+    df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
+    df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
+    df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
+    return df
+
+def turn_df_to_util_mat_at_limits(df, col1, col2, lim_col1 = None, lim_col2 = None):
+    '''
+    Inputs: Df, col1, col2, lim_col_1, lim_col_2
+    Returns: Utility matrix of two col, after filtering that
+    the columns have the minimum numbers specified.
+    '''
+    if lim_col1:
+        df = df.groupby(col1).filter(lambda x: len(x) > lim_col1)
+    if lim_col2:
+        df = df.groupby(col2).filter(lambda x: len(x) > lim_col2)
+
+    return pd.crosstab(df[col1], df[col2])
+
 def get_indices_of_test_set_values(ui_util_mat, percent):
     
     '''
@@ -120,10 +148,6 @@ def get_rank_score(r_ui, rank_ui, denominator):
     rank = numer_summation / denominator
     return rank
 
-# What if you just recommend the most popular?
-
-# Get most popular items in the mat
-
 def get_pop_rank_ui(test, item_inds):
     
     '''
@@ -142,9 +166,9 @@ def get_pop_rank_ui(test, item_inds):
     
     return pop_rank_ui
 
-def get_rank_score_from_train_test_model(train, test, denominator, user_inds, item_inds, rui, factors):
+def get_rank_and_pop_score_from_train_test_model(train, test, user_inds, item_inds, factors):
     '''
-    Takes a train and test set, fits a ALS model to the train set.
+    Takes a train and test set, and its indices, and fits a ALS model to the train set.
     Returns rank_scores for the model and popularity(baseline)
     '''
     
@@ -155,71 +179,24 @@ def get_rank_score_from_train_test_model(train, test, denominator, user_inds, it
     sparse_train = csr_matrix(train)
     train_model.fit(sparse_train)
 
+    #1
+    denominator = get_denominator_for_rank_algorithm(user_inds, item_inds, test)
+  
     #2
     rank_ui = get_rank_ui(train_model, user_inds, item_inds)
+
+    #3
+    rui = get_rui(test, user_inds, item_inds)
 
     #4
     rank_score = get_rank_score(rui, rank_ui, denominator)
 
-    return rank_score
+    #5
+    pop_rank_score = get_pop_rank_score(test, item_inds, rui, denominator)
+    return rank_score, pop_rank_score
 
-def get_pop_rank_score(test, item_inds, denominator):
+def get_pop_rank_score(test, item_inds, rui, denominator):
     
     pop_rank_ui = get_pop_rank_ui(test, item_inds)
     pop_rank_score = get_rank_score(rui, pop_rank_ui, denominator)
     return pop_rank_score
-
-df=pd.DataFrame(list(db.main_redo.find()))
-df = df.drop_duplicates(['URL', 'new_song_producer'])
-df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
-df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
-df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
-
-# vals = []
-
-# for num_prod in range(10):
-#     for num_artist in range(10):
-#         df2 = df.groupby('new_song_producer').filter(lambda x: len(x) > num_prod)
-#         df2 = df2.groupby('sampled_artist').filter(lambda x: len(x) > num_artist)
-
-#         prod_artist = pd.crosstab(df2.new_song_producer, df2.sampled_artist)
-
-#         user_inds, item_inds = get_indices_of_test_set_values(prod_artist, 5)
-
-#         train, test = make_train_set_and_test_set(user_inds, item_inds, prod_artist)
-
-#         #1
-#         denominator = get_denominator_for_rank_algorithm(user_inds, item_inds, test)
-
-#         #3
-#         rui = get_rui(test, user_inds, item_inds)
-
-#         rank_score = get_rank_score_from_train_test_model(train, test, denominator, user_inds, item_inds, rui, 100)
-#         pop_rank_score = get_pop_rank_score(test, item_inds, denominator)
-
-#         print(
-#         "Model rank score: {} \n\
-#         Popularity rank score: {}".format(rank_score, pop_rank_score))
-#         vals.append(num_prod, num_artist, rank_score, pop_rank_score)
-# print(vals)
-
-# pd.DataFrame(vals).to_csv('diff_limits_prods_artists.csv')
-
-prod_artist = pd.crosstab(df.new_song_producer, df.sampled_artist)
-
-user_inds, item_inds = get_indices_of_test_set_values(prod_artist, 5)
-
-train, test = make_train_set_and_test_set(user_inds, item_inds, prod_artist)
-
-#1
-denominator = get_denominator_for_rank_algorithm(user_inds, item_inds, test)
-
-#3
-rui = get_rui(test, user_inds, item_inds)
-
-rank_score = get_rank_score_from_train_test_model(train, test, denominator, user_inds, item_inds, rui, 1000)
-pop_rank_score = get_pop_rank_score(test, item_inds, denominator)
-
-print(
-"Model rank score: {} \n\
-Popularity rank score: {}".format(rank_score, pop_rank_score))
