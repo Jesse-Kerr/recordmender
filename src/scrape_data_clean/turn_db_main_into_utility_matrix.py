@@ -14,18 +14,16 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
     df = pd.DataFrame(list(mongo_collection.find()))
 
     #Turn sampled_song_producer from list to string
-    df['sampled_song_producer'] = df.sampled_song_producer.apply( lambda x: ', '.join(x))
 
     #Remove any possible duplicates
-    df = df.drop_duplicates(['URL', 'new_song_producer'])
+    #df = df.drop_duplicates(['URL', 'new_song_producer'])
 
     #drop rows with none_listed for essential columns
     #Only lists 100 out of 17,000 times there is no new_song_producer, similar low amounts for other columns below.
 
-    df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
+    #df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
 
     #Need to remove this step for now. 
-    df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
 
     # Make utility matrix: Get lists of producers and songs
     #sampled_songs = list(df.drop_duplicates('sampled_song_name')['sampled_song_name'])
@@ -47,7 +45,7 @@ def from_mongo_collection_to_utility_matrix(mongo_collection):
     df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
     
     #Create new column with both sampled_artist and sampled_name    
-    #df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
+    df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
 
     # make_util(utility_matrix, df)
     # prod_song = pd.crosstab(df.new_song_producer, df.sampled_artist_song)
