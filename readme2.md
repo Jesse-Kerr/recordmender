@@ -25,15 +25,15 @@ Recordmend is a tool for hip hop producers that recommends new songs for them to
 
 ## Rationale
 
-Digging in the crates. Sampling. Flipping. Finding a gem in an old song to repurpose in a new one can be quite the thrill. It's like uncovering unburied treasure or an unknown gem.
+Digging in the crates. Sampling. Flipping. Finding a gem in an old song to repurpose in a new one can be quite the thrill. It's like finding buried treasure.
 
-Underlying discovery, however, is a whole lot of searching, meaning listening to song after song, trying to find the buried treasure. 
+Underlying discovery, however, is a whole lot of searching. Listening to song after song, trying to find the secret gems hidden therein. 
 
 ![https://www.stonesthrow.com/madlib/](images/madlib_records.jpg)
 
 [Madlib](https://en.wikipedia.org/wiki/Madlib)
 
-While the search is certainly one of the best parts of finding treasure, most searchers at least bring a map. This is where recordmender comes in.
+As in the rest of life, the journey While the search can be one of the best parts of finding treasure, i equipped with a map. This is where recordmend comes in.
 
 ## Methodology
 

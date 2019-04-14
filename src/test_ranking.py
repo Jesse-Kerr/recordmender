@@ -258,8 +258,8 @@ def get_sparsity_of_training_data(train):
     return sparsity
 
 
-def filter_dataset_by_requisite_interactions(train, test, user_inds, item_inds,
- user_lim = None, item_lim = None):
+def filter_dataset_by_requisite_interactions(
+    train, test, user_lim = None, item_lim = None):
     
     '''
     Limits dataframes for model building to samples with requisite interactions.
@@ -302,9 +302,15 @@ def filter_dataset_by_requisite_interactions(train, test, user_inds, item_inds,
     else:
         items_above_lim = list(train.columns)
     
-    # filter the training and test sets to only have these producers
-    train_lim = train.loc[users_above_lim, items_above_lim]
-    test_lim = test.loc[users_above_lim, items_above_lim]
+    # filter the train set to only have these producers
+    train_lim = train[train.index.isin(users_above_lim)]
+
+    # We are taking the intersection of the columns with the items_above_lim.
+    train_lim = train_lim[train_lim.columns.intersection(items_above_lim)]
+
+    # Repeat for test set.
+    test_lim = test[test.index.isin(users_above_lim)]
+    test_lim = test_lim[test_lim.columns.intersection(items_above_lim)]
 
     #For the ranking, need the indices of this subset.
     #Find where train and test differ- this seems to work.
@@ -335,7 +341,7 @@ if __name__ == "__main__":
         for item_lim in range(-1, 0):
             
             train_lim, test_lim, user_inds_lim, item_inds_lim = filter_dataset_by_requisite_interactions(
-            train, test, user_inds, item_inds, user_lim, item_lim)
+            train, test, user_lim, item_lim)
             
             sparsity = get_sparsity_of_training_data(train_lim)
             
