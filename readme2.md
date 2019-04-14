@@ -120,4 +120,14 @@ Specific elements sampled were also examined.
 
 4. Try with prod_song dataset.
 
+Recommend a year to sample? An album?
+
+Combine year + artist + album, or etc. 
+
+Try other algorithms- random forest....
+
 Make a playlist of the 6game on whosampled- it takes a random progression through music.
+
+#Presentation
+
+Discuss why factors is lower, why lambda is lower.

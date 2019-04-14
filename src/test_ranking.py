@@ -23,7 +23,7 @@ def clean_up_mongo_coll(mongo_coll):
 
     Returns df
     '''
-    df=pd.DataFrame(list(db.main_redo.find()))
+    df = pd.DataFrame(list(db.main_redo.find()))
     df = df.drop_duplicates(['URL', 'new_song_producer'])
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
     df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
@@ -43,17 +43,12 @@ def clean_up_mongo_coll(mongo_coll):
     df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
     return df
 
-def turn_df_to_util_mat_at_limits(df, col1, col2, lim_col1 = None, lim_col2 = None):
+def turn_df_to_util_mat(df, col1, col2):
     '''
     Inputs: Df, col1, col2, lim_col_1, lim_col_2
     Returns: Utility matrix of two col, after filtering that
     the columns have the minimum numbers specified.
     '''
-    if lim_col1:
-        df = df.groupby(col1).filter(lambda x: len(x) > lim_col1)
-    if lim_col2:
-        df = df.groupby(col2).filter(lambda x: len(x) > lim_col2)
-
     return pd.crosstab(df[col1], df[col2])
 
 def get_indices_of_test_set_values(ui_util_mat, percent):
@@ -89,12 +84,15 @@ def make_train_set_and_test_set(user_inds, item_inds, ui_util_mat):
     replaced with zeros.
     
     Before doing this, copies train set to test set.
+
+    Changes as a for loop
     '''
     train = ui_util_mat.copy()
     test = ui_util_mat.copy()
-    
-    train.iloc[user_inds, item_inds] = 0
-    
+    train = csr_matrix(train.values)
+    train[user_inds, item_inds] = 0
+    train = pd.DataFrame(train.todense(), columns= ui_util_mat.columns, index = ui_util_mat.index)
+
     return train, test
 
 def get_denominator_for_rank_algorithm(user_inds, item_inds, test):
@@ -180,7 +178,7 @@ def get_pop_rank_ui(test, item_inds):
     return pop_rank_ui
 
 def get_rank_and_pop_score_from_train_test_model(
-    train, test, user_inds, item_inds, factors = 12, regularization = 0.5, iterations = 50):
+    train, test, user_inds, item_inds, factors = 10, regularization = 74, iterations = 50):
     '''
     Takes a train and test set, and its indices, and fits a ALS model to the train set.
     Returns rank_scores for the model and popularity(baseline)
@@ -229,7 +227,7 @@ def get_rank_and_pop_score_of_two_columns(df, col1, col2, split_pct, factors = 4
     Returns: Rank_score and pop_score of those two columns
     '''
     
-    user_item = turn_df_to_util_mat_at_limits(
+    user_item = turn_df_to_util_mat(
             df, col1, col2)
 
     user_inds, item_inds = get_indices_of_test_set_values(user_item, split_pct)
@@ -241,3 +239,119 @@ def get_rank_and_pop_score_of_two_columns(df, col1, col2, split_pct, factors = 4
     
     return rank_score, pop_rank_score
 
+def get_sparsity_of_training_data(train):
+    '''
+    Input:
+        train: A utility matrix with specific interactions replaced with zeros
+    Return:
+        sparsity: The percentage of nonzero interactions in the matrix
+    '''
+    
+    # Number of possible interactions in the matrix
+    matrix_size = train.shape[0]*train.shape[1] 
+    
+    # Number of actual interactions
+    nonzeros = sum(train.sum(axis=0))
+    
+    sparsity = 100*(1 - (nonzeros/matrix_size))
+    
+    return sparsity
+
+
+def filter_dataset_by_requisite_interactions(train, test, user_inds, item_inds,
+ user_lim = None, item_lim = None):
+    
+    '''
+    Limits dataframes for model building to samples with requisite interactions.
+
+    Input: 
+        train: The training data
+        test: The test data
+        user_lim: The lower limit of interactions you will accept for user
+        item_lim: The lower limit of interactions you will accept for items
+
+    Returns: 
+        train_lim: Training set with users and items above user_lim and item_lim
+        test_lim: Test set with users and items above user_lim and item_lim
+        user_inds_lim: New user indices 
+        item_inds_lim: New item indices
+        
+    '''
+    
+    if user_lim:
+        
+        #Count interactions for each user
+        inters_per_user = train.sum(axis = 1)
+        
+        #Get a list of users with more than user_lim of interactions.
+        users_above_lim = list(inters_per_user[inters_per_user > user_lim].index)
+    
+    else:
+        
+        #If user_lim not provided, simply get the users
+        users_above_lim = list(train.index)
+
+    if item_lim:
+        
+        #Count interactions for each item
+        inters_per_item = train.sum(axis = 0)
+        
+        #Get a list of items with more than item_lim of interactions.
+        items_above_lim = list(inters_per_item[inters_per_item > item_lim].index)
+
+    else:
+        items_above_lim = list(train.columns)
+    
+    # filter the training and test sets to only have these producers
+    train_lim = train.loc[users_above_lim, items_above_lim]
+    test_lim = test.loc[users_above_lim, items_above_lim]
+
+    #For the ranking, need the indices of this subset.
+    #Find where train and test differ- this seems to work.
+    inds_lim = np.where(train_lim != test_lim)
+
+    user_inds_lim= inds_lim[0]
+    item_inds_lim = inds_lim[1]
+    
+    return train_lim, test_lim, user_inds_lim, item_inds_lim
+
+if __name__ == "__main__":
+    
+    df = clean_up_mongo_coll(db.main_redo)
+    user_art = turn_df_to_util_mat(
+        df, 'new_song_producer', 'sampled_artist')
+    
+    user_inds, item_inds = get_indices_of_test_set_values(user_art, 5)
+
+    train, test = make_train_set_and_test_set(user_inds, item_inds, user_art)
+    
+    rows = []
+
+    columns = ['user_lim', 'item_lim', 'num_users_at_lim', 'num_items_at_lim', 
+                    'sparsity', 'percent_users_lost', 'percent_items_lost', 
+                   'rank_score', 'pop_rank_score']
+
+    for user_lim in range(-1, 1):
+        for item_lim in range(-1, 0):
+            
+            train_lim, test_lim, user_inds_lim, item_inds_lim = filter_dataset_by_requisite_interactions(
+            train, test, user_inds, item_inds, user_lim, item_lim)
+            
+            sparsity = get_sparsity_of_training_data(train_lim)
+            
+            num_users_at_lim = train_lim.shape[0]
+            num_items_at_lim = train_lim.shape[1]
+            
+            percent_users_lost = 1 - (num_users_at_lim / train.shape[0])
+            percent_items_lost = 1 - (num_items_at_lim / train.shape[1])
+            
+            rank_score, pop_rank_score = get_rank_and_pop_score_from_train_test_model(
+                train_lim, test_lim, user_inds_lim, item_inds_lim, 10, 74, 50)
+            
+            rows.append([user_lim, item_lim, num_users_at_lim, num_items_at_lim, 
+                        sparsity, percent_users_lost, percent_items_lost, 
+                    rank_score, pop_rank_score])
+            
+    statistics_at_interaction_limits = pd.DataFrame(rows, columns = columns)
+
+    statistics_at_interaction_limits.to_csv("statistics_at_interaction_limits.csv")
