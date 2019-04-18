@@ -21,25 +21,32 @@ MathJax.Hub.Queue(function() {
 
 Recordmend is a tool for hip hop producers that recommends new songs for them to sample based off of their sampling history. 
 
+## What is sampling?
+![j dilla](images/j_dilla_searching.jpg)
+Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. However, it has been estimated that there are as many as 100 million recorded songs in the world. This overwhelming number of options can discourage producers from searching out new possibilities.<sup>1</sup>
 
+## Recommenders help users choose between many options   
 
+Recommendation engines have become ubiquitous in fields such as movies, Youtube videos, books, and online shopping. In these fields, users are presented with millions of options to choose from, which at first pass would seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>2</sup> Although this phenomenon has received increased scientific scrutiny<sup>3</sup> recently, it is supported by a 2015 meta-analysis.<sup>4</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase or process easier and quicker.
+
+## Types of recommendation engines
+
+Recommendation engines are split into two types, content filtering and collaborative filtering. In content filtering, characterists about users and items are entered into the algorithm and used 
 ## Rationale
 
 Digging in the crates. Sampling. Flipping. Finding a gem in an old song to repurpose in a new one can be quite the thrill. It's like finding buried treasure.
 
-Underlying discovery, however, is a whole lot of searching. Listening to song after song, trying to find the secret gems hidden therein. 
+Before discovery, however, comes a whole lot of searching. Listening to song after song, trying to find the secret gems hidden therein. 
 
 ![https://www.stonesthrow.com/madlib/](images/madlib_records.jpg)
 
 [Madlib](https://en.wikipedia.org/wiki/Madlib)
 
-As in the rest of life, the journey While the search can be one of the best parts of finding treasure, i equipped with a map. This is where recordmend comes in.
+As in the rest of life, the journey is more important than the destination. Yet most explorers travel with a map. Recordmend is that map. 
 
 ## Methodology
 
-A utility matrix $R$ was constructed, with `producers vector` $p$ rows and sampled artist vector $a$ columns. $R_{p,a}$ represents the number of times a given producer $p$ sampled an artist $a$, ranging from 0 to 131.
-
-I used data from whosampled.com to construct the matrix.
+Data scraped from [WhoSampled](WhoSampled.com) was used to construct a utility matrix $R$ with $P$ rows and $A$ columns, which are the number of unique producers and unique sampled artists in the dataset, respectively. $R_{p,a}$ thus represents the number of times a given producer $p$ sampled an artist $a$, ranging from 0 to 131.
 
 Singular Value Decomposition is a latent factor model which causes dimensionality reduction. Two matrices are created, a user-factor matrix and an item-factor matrix, where the factor represents the number of latent factors in the data. The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
 
@@ -128,6 +135,10 @@ Try other algorithms- random forest....
 
 Make a playlist of the 6game on whosampled- it takes a random progression through music.
 
-#Presentation
+1. http://www.marsbands.com/2011/10/97-million-and-counting/
 
-Discuss why factors is lower, why lambda is lower.
+2. https://www.scientificamerican.com/article/the-tyranny-of-choice/
+
+3. https://www.pbs.org/newshour/economy/is-the-famous-paradox-of-choic
+
+4. https://www.sciencedirect.com/science/article/abs/pii/S1057740814000916

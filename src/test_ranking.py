@@ -263,6 +263,7 @@ def filter_dataset_by_requisite_interactions(
     
     '''
     Limits dataframes for model building to samples with requisite interactions.
+    As of now user_lim and item_lim must be provided
 
     Input: 
         train: The training data
@@ -275,32 +276,19 @@ def filter_dataset_by_requisite_interactions(
         test_lim: Test set with users and items above user_lim and item_lim
         user_inds_lim: New user indices 
         item_inds_lim: New item indices
-        
-    '''
     
-    if user_lim:
-        
-        #Count interactions for each user
-        inters_per_user = train.sum(axis = 1)
-        
-        #Get a list of users with more than user_lim of interactions.
-        users_above_lim = list(inters_per_user[inters_per_user > user_lim].index)
+    '''    
+    #Count interactions for each user
+    inters_per_user = train.sum(axis = 1)
     
-    else:
+    #Get a list of users with more than user_lim of interactions.
+    users_above_lim = list(inters_per_user[inters_per_user > user_lim].index)
         
-        #If user_lim not provided, simply get the users
-        users_above_lim = list(train.index)
-
-    if item_lim:
-        
-        #Count interactions for each item
-        inters_per_item = train.sum(axis = 0)
-        
-        #Get a list of items with more than item_lim of interactions.
-        items_above_lim = list(inters_per_item[inters_per_item > item_lim].index)
-
-    else:
-        items_above_lim = list(train.columns)
+    #Count interactions for each item
+    inters_per_item = train.sum(axis = 0)
+    
+    #Get a list of items with more than item_lim of interactions.
+    items_above_lim = list(inters_per_item[inters_per_item > item_lim].index)
     
     # filter the train set to only have these producers
     train_lim = train[train.index.isin(users_above_lim)]
