@@ -259,7 +259,7 @@ def get_sparsity_of_training_data(train):
 
 
 def filter_dataset_by_requisite_interactions(
-    train, test, user_lim = None, item_lim = None):
+    train, test, user_lim, item_lim):
     
     '''
     Limits dataframes for model building to samples with requisite interactions.
@@ -337,8 +337,8 @@ if __name__ == "__main__":
                     'sparsity', 'percent_users_lost', 'percent_items_lost', 
                    'rank_score', 'pop_rank_score']
 
-    for user_lim in range(-1, 1):
-        for item_lim in range(-1, 0):
+    for user_lim in range(0, 1):
+        for item_lim in range(0, 1):
             
             train_lim, test_lim, user_inds_lim, item_inds_lim = filter_dataset_by_requisite_interactions(
             train, test, user_lim, item_lim)
