@@ -1,22 +1,3 @@
-<style TYPE="text/css">
-code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
-</style>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'] // removed 'code' entry
-    }
-});
-MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i = 0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-});
-</script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML-full"></script>
-
 # Recordmend
 
 Recordmend is a tool for music producers that recommends new songs for them to sample based off of their sampling history. 
@@ -56,10 +37,7 @@ Recommendation engines are split into two types, <i>content filtering</i> and <i
 Singular Value Decomposition is a method of decomposing a matrix into two component matrices, whose dimensions are determined by the number of latent factors in the data. The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
 
 
-$\underset{x,y}min\underset{u,i}\sum 
-c_{ui} (p_{ui} - x_u^Ty_i)^2 + \lambda
-(\underset u \sum \parallel x_u \parallel ^2
-+\underset u \sum \parallel y_i \parallel ^2)$
+<a href="https://www.codecogs.com/eqnedit.php?latex=\underset{x,y}min\underset{u,i}\sum&space;c_{ui}&space;(p_{ui}&space;-&space;x_u^Ty_i)^2&space;&plus;&space;\lambda&space;(\underset&space;u&space;\sum&space;\parallel&space;x_u&space;\parallel&space;^2&space;&plus;\underset&space;u&space;\sum&space;\parallel&space;y_i&space;\parallel&space;^2)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\underset{x,y}min\underset{u,i}\sum&space;c_{ui}&space;(p_{ui}&space;-&space;x_u^Ty_i)^2&space;&plus;&space;\lambda&space;(\underset&space;u&space;\sum&space;\parallel&space;x_u&space;\parallel&space;^2&space;&plus;\underset&space;u&space;\sum&space;\parallel&space;y_i&space;\parallel&space;^2)" title="\underset{x,y}min\underset{u,i}\sum c_{ui} (p_{ui} - x_u^Ty_i)^2 + \lambda (\underset u \sum \parallel x_u \parallel ^2 +\underset u \sum \parallel y_i \parallel ^2)" /></a>
 
 ##### Where:
 
