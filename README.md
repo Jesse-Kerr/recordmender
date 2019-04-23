@@ -15,10 +15,6 @@ Recordmender promises to help producers narrow their search down to more promisi
 
 <br>
 
-![https://www.stonesthrow.com/madlib/](images/madlib_records.jpg)
-
-[Madlib is clearly overwhelmed](https://en.wikipedia.org/wiki/Madlib)
-
 ## Recommenders help users choose between many options   
 
 The problem of too many options can be addressed using a recommendation engine. Recommenders have become ubiquitous in fields such as movies, Youtube videos, books, and online shopping, where users are presented with millions of options to choose from. At first pass, this may seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>2</sup> Although this phenomenon has received increased scientific scrutiny<sup>3</sup> recently, it is supported by a 2015 meta-analysis.<sup>4</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase process easier and quicker.
