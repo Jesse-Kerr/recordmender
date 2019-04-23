@@ -1,3 +1,9 @@
+'''
+A subdirectory that contains a __init__.py is considered a package, and can be 
+imported. So when we import the app package, we get the variables inside of these
+files.
+'''
+
 from flask import Flask
 
 import os

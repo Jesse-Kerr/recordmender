@@ -1,9 +1,11 @@
-# this module contains all the different URLs that 
-# the application implements.
+# this module contains all the different URLs that the application implements.
 
 from flask import render_template, flash, redirect, request
 from flask_pymongo import PyMongo
+
+#we get the instance of our flask app here. 
 from app import flask_app
+
 from app.forms import LoginForm
 import pandas as pd
 from turn_db_main_into_utility_matrix import from_mongo_collection_to_utility_matrix
@@ -16,9 +18,11 @@ mongo = PyMongo(flask_app)
 # above it. 
 @flask_app.route("/", methods = ['GET', 'POST'])
 def dropdown():
-    _, artist_prod, df = from_mongo_collection_to_utility_matrix(mongo.db.main_redo)    
+    _, _, df = from_mongo_collection_to_utility_matrix(mongo.db.main_redo)    
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') & (df.sampled_song_name != 'None Listed')]
     top_twenty_djs = list(df.groupby('new_song_producer').count()['URL'].sort_values(ascending = False)[:20].index)
+    
+    #render_template uses Jinja2 to put data into the 
     return render_template('test.html', djs=top_twenty_djs)
 
 @flask_app.route("/submitted", methods = ['GET', 'POST'])
