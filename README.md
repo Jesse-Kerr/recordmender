@@ -51,7 +51,7 @@ The dot product of these matrices is an attempt to reconstitute the original uti
 
 Like other gradient descent algorithms, this model begins with taking the squared error of our prediction <a href="https://www.codecogs.com/eqnedit.php?latex=(p_{ui}&space;-&space;x_u^Ty_i)^2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?(p_{ui}&space;-&space;x_u^Ty_i)^2" title="(p_{ui} - x_u^Ty_i)^2" /></a>. It then multiplies our error by our confidence in this prediction, <a href="https://www.codecogs.com/eqnedit.php?latex=c_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?c_{ui}" title="c_{ui}" /></a>, thus increasing the cost of errors on high confidence user-item interactions. Across all users <a href="https://www.codecogs.com/eqnedit.php?latex=x" target="_blank"><img src="https://latex.codecogs.com/gif.latex?x" title="x" /></a> and items <a href="https://www.codecogs.com/eqnedit.php?latex=y" target="_blank"><img src="https://latex.codecogs.com/gif.latex?y" title="y" /></a>, we minimize this cost.
 
-In practice, however, implementing stochastic gradient descent is recommenders, because there are usually billions of user-item interactions to compute over, which is extremely computationally expensive.
+In practice, however, implementing stochastic gradient descent is impractical for recommenders, because there are usually billions of user-item interactions to compute over, which is extremely computationally expensive.
 
 ## ALS
 
@@ -92,13 +92,7 @@ The model was ranked using a ranking algorithm adopted from [Hu 2008](https://ie
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> are the percentile ranking of each item for each user.
 
-How does this algorithm work? We can see that <a href="https://www.codecogs.com/eqnedit.php?latex=\sum_{u,i}&space;r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\sum_{u,i}&space;r^t_{ui}" title="\sum_{u,i} r^t_{ui}" /></a>is in both the numerator and the denominator. If <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> was not in the numerator, <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> would simply equal 1. 
-
-<a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> is the percentile ranking of each item for each user, such that the item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%.
-
-Therefore, if the algorithm is correct, the low percentages will cancel out the higher <a href="https://www.codecogs.com/eqnedit.php?latex=r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?r^t_{ui}" title="r^t_{ui}" /></a>, making the <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> go towards 0.
-
-The item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%.
+How does this algorithm work? We can see that <a href="https://www.codecogs.com/eqnedit.php?latex=\sum_{u,i}&space;r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\sum_{u,i}&space;r^t_{ui}" title="\sum_{u,i} r^t_{ui}" /></a>is in both the numerator and the denominator. If <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> was not in the numerator, <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> would simply equal 1. <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> is the percentile ranking of each item for each user, such that the item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%. Therefore, if the algorithm is correct, the low percentages will cancel out the higher <a href="https://www.codecogs.com/eqnedit.php?latex=r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?r^t_{ui}" title="r^t_{ui}" /></a>, making the <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> go towards 0. Thus, the item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%.
 
 ## Perform Test/Train Split
 
@@ -110,23 +104,18 @@ We train the model on this `train` dataset with these specific values hidden.
 
 ![Creating train and test set](images/train_test.png)
 
-## Making model better
-
-We found that lower # of factors lead to a better rank score. 12 worked the best.
-
-Different regularization values of lambda were tried from 0.01 to 1000.
-
-Different numbers of iterations from 10 to 210, in steps of 40. 
-
-With these best values, different numbers of artists sampled and producers were tried.
-
 ## The model performance was hampered by low numbers of training examples for most producers.
 
 ![](images/samples_per_producers_in_train_set.png)
 
-## Rank Score got better when producers with few sampled songs (training examples) were included.
+## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
 ![](images/rank_score_over_training_examples.png)
+
+
+## Grid Searching the model
+
+I found that 20 factors, a lambda of 30, and 50 iterations gave the best rank score. 
 
 ## Conclusion and Future steps
 My model scores much better than random and is similar to popularity. However, many of its’ recommendations are lacking in diversity. Furthermore, it is not effective for producers with few sampled artists. A multi-level ensemble recommender with content filtering may help to address these problems. 
