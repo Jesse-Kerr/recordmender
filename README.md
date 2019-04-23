@@ -7,38 +7,39 @@ Recordmend is a tool for music producers that recommends new songs for them to s
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
-I started making hip hop beats in high school when my parents got their computer fixed, and our computer guy put a terabyte of music on our new computer (he probably wanted to distract us from how much he was overcharging us by). Suddenly I had huge amounts of songs to search through and listen to, and I found that every once in a while, I would make a discovery: There was a perfect sample hidden in one of the songs. I loved those moments.
+I started making hip hop beats in high school when my parents' computer guy put a terabyte of music on our new computer (he probably wanted to distract from how much he was overcharging us.) Suddenly I had huge amounts of songs to search through and listen to, and I found that every once in a while, I would make a discovery: There was a perfect sample hidden in one of the songs. I loved those moments.
 
 However, finding those gems could take hours of patient listening. This strategy remains the only way to find new samples, and it means that finding new samples requires a lot of leg work. This leads many producers to only sample the classics (James Brown, for example) and to leave the huge mass of work that is music unsearched.
 
-Recordmender promises to help producers narrow their search down to more promising songs. The leg work wouldn't be gone, but the time of their search could be cut down a great deal. Getting producers to sample from new songs could have the effect of increasing diversity in modern music, introducing younger listeners to a wider selections of songs and increasing cross-pollination across genres and generations.
-
-<br>
+Recordmender promises to help producers narrow their search down to more promising songs. It won't remove the leg work, but the time cost could be cut down a great deal. Furthermore, getting producers to sample from new songs could increase diversity in modern music, introduce younger listeners to a wider selections of songs, and foster cross-pollination across genres and generations.
 
 ## Recommenders help users choose between many options   
 
-The problem of too many options can be addressed using a recommendation engine. Recommenders have become ubiquitous in fields such as movies, Youtube videos, books, and online shopping, where users are presented with millions of options to choose from. At first pass, this may seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>2</sup> Although this phenomenon has received increased scientific scrutiny<sup>3</sup> recently, it is supported by a 2015 meta-analysis.<sup>4</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase process easier and quicker.
+The problem of too many options can be addressed using a recommendation engine. At first pass, many options may seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>1</sup> Although this phenomenon has received increased scientific scrutiny<sup>2</sup> recently, it is supported by a 2015 meta-analysis.<sup>3</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase process easier and quicker.
 
 ## Types of recommendation engines
 
-Recommendation engines are split into two types, <i>content filtering</i> and <i>collaborative filtering</i>. In content filtering, characterists about users and items are entered into the algorithm. But in collaborative filtering, the user's behavior is all that is needed to make recommendations. By monitoring the behavior of its users, companies learn about their users and their items, and are thus able to identify which users will want which things. Furthermore, the user doesn't even need to explicitly rate the items they view- instead, their watch patterns are enough to learn their likes and dislikes. Such a model is referred to as an <i>implicit feedback</i> model, as opposed to an <i> explicit feedback </i> model.
+Recommendation engines are split into two types, <i>content filtering</i> and <i>collaborative filtering</i>. In content filtering, characterists about users and items are entered into the algorithm. But in collaborative filtering, the user's behavior is all that is needed to make recommendations. By monitoring what items its users' choose, companies learn more about both, and are thus able to identify which users will want which things. The user doesn't even need to explicitly rate the items they view- instead, their watch patterns are enough to learn their likes and dislikes. Such a model is referred to as an <i>implicit feedback</i> model, as opposed to an <i> explicit feedback </i> model.
 
 ![types of recommenders](images/recommender_types.png)
 ## Methodology
 
- I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. I then decomposed the matrix with Singular Value Decomposition and optimized the two component matrices by Alternating Least Squares in Pandas and Numpy. 
-
+I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. 
+ 
 ![Purple arrows show producer and sampled song](images/whosampled_screenshot2.png)
 
-Singular Value Decomposition is a method of decomposing a matrix into two component matrices, whose dimensions are determined by the number of latent factors in the data. The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
+I then decomposed the matrix with Singular Value Decomposition and optimized the two component matrices by Alternating Least Squares in Pandas and Numpy. Singular Value Decomposition is a method of decomposing a matrix into two component matrices, whose dimensions are determined by the number of latent factors in the data. 
 
+![SVD visualized](images/svd.png)
+
+The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\underset{x,y}min\underset{u,i}\sum&space;c_{ui}&space;(p_{ui}&space;-&space;x_u^Ty_i)^2&space;&plus;&space;\lambda&space;(\underset&space;u&space;\sum&space;\parallel&space;x_u&space;\parallel&space;^2&space;&plus;\underset&space;u&space;\sum&space;\parallel&space;y_i&space;\parallel&space;^2)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\underset{x,y}min\underset{u,i}\sum&space;c_{ui}&space;(p_{ui}&space;-&space;x_u^Ty_i)^2&space;&plus;&space;\lambda&space;(\underset&space;u&space;\sum&space;\parallel&space;x_u&space;\parallel&space;^2&space;&plus;\underset&space;u&space;\sum&space;\parallel&space;y_i&space;\parallel&space;^2)" title="\underset{x,y}min\underset{u,i}\sum c_{ui} (p_{ui} - x_u^Ty_i)^2 + \lambda (\underset u \sum \parallel x_u \parallel ^2 +\underset u \sum \parallel y_i \parallel ^2)" /></a>
 
 ##### Where:
 
 * <a href="https://www.codecogs.com/eqnedit.php?latex=x_u" target="_blank"><img src="https://latex.codecogs.com/gif.latex?x_u" title="x_u" /></a> is the first matrix (termed the user vector).
-* <a href="https://www.codecogs.com/eqnedit.php?latex=y_i" target="_blank"><img src="https://latex.codecogs.com/gif.latex?y_i" title="y_i" /></a>is the second matrix (termed the item vector).
+* <a href="https://www.codecogs.com/eqnedit.php?latex=y_i" target="_blank"><img src="https://latex.codecogs.com/gif.latex?y_i" title="y_i" /></a> is the second matrix (termed the item vector).
 * <a href="https://www.codecogs.com/eqnedit.php?latex=x_u^Ty_i" target="_blank"><img src="https://latex.codecogs.com/gif.latex?x_u^Ty_i" title="x_u^Ty_i" /></a> is their dot product.
 
 * <a href="https://www.codecogs.com/eqnedit.php?latex=p_{ui}&space;=&space;1" target="_blank"><img src="https://latex.codecogs.com/gif.latex?p_{ui}&space;=&space;1" title="p_{ui} = 1" /></a> if producer sampled a song, 0 if producer did not sample a song.
@@ -46,13 +47,11 @@ Singular Value Decomposition is a method of decomposing a matrix into two compon
 * <a href="https://www.codecogs.com/eqnedit.php?latex=c_{ui}&space;=" target="_blank"><img src="https://latex.codecogs.com/gif.latex?c_{ui}&space;=" title="c_{ui} =" /></a> our confidence in the data; specifically, the number of times a producer sampled a song. This is calculated as <a href="https://www.codecogs.com/eqnedit.php?latex=c_{ui}&space;=1&space;&plus;&space;\alpha&space;*&space;r_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?c_{ui}&space;=1&space;&plus;&space;\alpha&space;*&space;r_{ui}" title="c_{ui} =1 + \alpha * r_{ui}" /></a>, where
 <a href="https://www.codecogs.com/eqnedit.php?latex=r_{ui}&space;=" target="_blank"><img src="https://latex.codecogs.com/gif.latex?r_{ui}&space;=" title="r_{ui} =" /></a># of interactions for a user-item pair, and <a href="https://www.codecogs.com/eqnedit.php?latex=\alpha" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\alpha" title="\alpha" /></a> determines our confidence levels.
 
-* <a href="https://www.codecogs.com/eqnedit.php?latex=\lambda" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /></a> is regularization term.
+* <a href="https://www.codecogs.com/eqnedit.php?latex=\lambda" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /></a> is the regularization term.
 
-![SVD visualized](images/svd.png)
+Like other gradient descent algorithms, this model begins with taking the squared error of our prediction <a href="https://www.codecogs.com/eqnedit.php?latex=(p_{ui}&space;-&space;x_u^Ty_i)^2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?(p_{ui}&space;-&space;x_u^Ty_i)^2" title="(p_{ui} - x_u^Ty_i)^2" /></a>. It then multiplies our error by our confidence in this prediction, <a href="https://www.codecogs.com/eqnedit.php?latex=c_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?c_{ui}" title="c_{ui}" /></a>, thus increasing the cost of errors on high confidence user-item interactions. Across all users <a href="https://www.codecogs.com/eqnedit.php?latex=x" target="_blank"><img src="https://latex.codecogs.com/gif.latex?x" title="x" /></a> and items <a href="https://www.codecogs.com/eqnedit.php?latex=y" target="_blank"><img src="https://latex.codecogs.com/gif.latex?y" title="y" /></a>, we minimize this cost.
 
-Like other gradient descent algorithms, this model begins with taking the squared error of our prediction <a href="https://www.codecogs.com/eqnedit.php?latex=(p_{ui}&space;-&space;x_u^Ty_i)^2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?(p_{ui}&space;-&space;x_u^Ty_i)^2" title="(p_{ui} - x_u^Ty_i)^2" /></a>. It then multiplies our error by our confidence in this prediction, <a href="https://www.codecogs.com/eqnedit.php?latex=c_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?c_{ui}" title="c_{ui}" /></a>, thus increasing the cost of errors on high confidence user-item interactions. Across all  users x and items y, we minimize this cost.
-
-In practice, however, stochastic gradient descent is impossible in implicit feedback. There are often billions of user-item interactions to compute over.
+In practice, however, implementing stochastic gradient descent is recommenders, because there are usually billions of user-item interactions to compute over, which is extremely computationally expensive.
 
 ## ALS
 
@@ -132,10 +131,8 @@ With these best values, different numbers of artists sampled and producers were 
 ## Conclusion and Future steps
 My model scores much better than random and is similar to popularity. However, many of its’ recommendations are lacking in diversity. Furthermore, it is not effective for producers with few sampled artists. A multi-level ensemble recommender with content filtering may help to address these problems. 
 
-1. http://www.marsbands.com/2011/10/97-million-and-counting/
+1. https://www.scientificamerican.com/article/the-tyranny-of-choice/
 
-2. https://www.scientificamerican.com/article/the-tyranny-of-choice/
+2. https://www.pbs.org/newshour/economy/is-the-famous-paradox-of-choic
 
-3. https://www.pbs.org/newshour/economy/is-the-famous-paradox-of-choic
-
-4. https://www.sciencedirect.com/science/article/abs/pii/S1057740814000916
+3. https://www.sciencedirect.com/science/article/abs/pii/S1057740814000916
