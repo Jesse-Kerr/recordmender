@@ -2,8 +2,11 @@ from flask import Flask
 
 import os
 
-app = Flask(__name__)
-SECRET_KEY = os.urandom(32)
-app.config['SECRET_KEY'] = SECRET_KEY
+#app object is an instance of Flask class
+flask_app = Flask(__name__)
 
+SECRET_KEY = os.urandom(32)
+flask_app.config['SECRET_KEY'] = SECRET_KEY
+
+#import the routes module
 from app import routes

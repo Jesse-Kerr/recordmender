@@ -17,6 +17,8 @@ MathJax.Hub.Queue(function() {
 </script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML-full"></script>
 
+Recordmend is a tool for music producers that helps them find songs to sample for their next beat. It uses an implicit feedback, collaborative filtering approach to create its recommendations. Data for the recommender was scraped from whosampled.com into MongoDB using Selenium. This user-item utility matrix, where each cell's value represents the number of times a producer sampled an artist, was analyzed in Pandas and Numpy. A latent factor model with Singular Value Decomposition, trained using Alternating Least Squares, was used to create the recommendations.
+
 # Recordmend
 
 Recordmend is a tool for hip hop producers that recommends new songs for them to sample based off of their sampling history. 
@@ -124,12 +126,6 @@ Specific elements sampled were also examined.
 1. Look at none listed for new song producer. Consider replacing with new_song_artist
 
 3. Examine features of model. Clustering of items. Recommendations. 
-
-4. Try with prod_song dataset.
-
-Recommend a year to sample? An album?
-
-Combine year + artist + album, or etc. 
 
 Try other algorithms- random forest....
 

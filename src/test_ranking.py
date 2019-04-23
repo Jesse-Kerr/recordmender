@@ -259,7 +259,7 @@ def get_sparsity_of_training_data(train):
 
 
 def filter_dataset_by_requisite_interactions(
-    train, test, user_lim, item_lim):
+    train, user_lim, item_lim, test = None):
     
     '''
     Limits dataframes for model building to samples with requisite interactions.
@@ -296,19 +296,21 @@ def filter_dataset_by_requisite_interactions(
     # We are taking the intersection of the columns with the items_above_lim.
     train_lim = train_lim[train_lim.columns.intersection(items_above_lim)]
 
-    # Repeat for test set.
-    test_lim = test[test.index.isin(users_above_lim)]
-    test_lim = test_lim[test_lim.columns.intersection(items_above_lim)]
+    # Repeat for test set, if provided
+    if test:
+        test_lim = test[test.index.isin(users_above_lim)]
+        test_lim = test_lim[test_lim.columns.intersection(items_above_lim)]
 
     #For the ranking, need the indices of this subset.
     #Find where train and test differ- this seems to work.
-    inds_lim = np.where(train_lim != test_lim)
+        inds_lim = np.where(train_lim != test_lim)
 
-    user_inds_lim= inds_lim[0]
-    item_inds_lim = inds_lim[1]
-    
-    return train_lim, test_lim, user_inds_lim, item_inds_lim
-
+        user_inds_lim= inds_lim[0]
+        item_inds_lim = inds_lim[1]
+        return train_lim, test_lim, user_inds_lim, item_inds_lim
+    else:
+        return train_lim
+     
 if __name__ == "__main__":
     
     df = clean_up_mongo_coll(db.main_redo)
