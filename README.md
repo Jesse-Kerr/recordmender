@@ -100,7 +100,7 @@ We train the model on this `train` dataset with these specific values hidden.
 I found that 20 factors, a lambda of 30, and 50 iterations gave the best rank score. 
 
 ## Conclusion and Future steps
-My model scores much better than random and is similar to popularity. However, many of its’ recommendations are lacking in diversity. Furthermore, it is not effective for producers with few sampled artists. A multi-level ensemble recommender with content filtering may help to address these problems. 
+My model scores much better than random and is similar to popularity. However, it is not effective for producers with few sampled artists. A multi-level ensemble recommender with content filtering may help to address these problems. 
 
 1. https://www.scientificamerican.com/article/the-tyranny-of-choice/
 
