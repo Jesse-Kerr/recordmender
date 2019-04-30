@@ -7,8 +7,6 @@ Recordmend is a tool for music producers that recommends new songs for them to s
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
-Recordmender helps producers narrow their search down to more promising songs. It won't remove the leg work, but the time cost could be cut down a great deal. Furthermore, getting producers to sample from new songs could increase diversity in modern music, introduce younger listeners to a wider selections of songs, and foster cross-pollination across genres and generations.
-
 ## Recommenders help users choose between many options   
 
 At first pass, many options may seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>1</sup> Although this phenomenon has received increased scientific scrutiny<sup>2</sup> recently, it is supported by a 2015 meta-analysis.<sup>3</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase process easier and quicker.
