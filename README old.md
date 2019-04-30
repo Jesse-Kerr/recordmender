@@ -126,11 +126,7 @@ I don't know of any song sample recommender systems out there. I think this will
 
 ## Who cares? If you're successful, what will the impact be?
 
-I used to make hip hop beats in high school. I started when my parents got their computer fixed, and our computer guy decided to put a near terabyte of music on our new computer (he was way overcharging us for the computer, and maybe wanted to distract us). Suddenly I had huge amounts of songs to search through and listen to, and I found that every once in a while, I would make a discovery: There was a perfect sample hidden in one of the songs. I loved those moments.
 
-However, finding those gems could take hours of patient listening. This strategy remains the only way to find new samples, and it means that finding new samples requires a lot of leg work. This leads many producers to only sample the classics (James Brown, for example) and to leave the huge mass of work that is music unsearched.
-
-Recordmender would help producers to narrow their search down to more promising songs. They would still have to do the leg work of listening through these songs, but the time of their search could be cut down a great deal. Getting producers to sample from new songs could have the effect of increasing diversity in modern music, introducing younger listeners to more wide selections of songs, and increasing cross-pollination across genres and generations.
 
 ## How will you present your work?
 
