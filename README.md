@@ -7,19 +7,15 @@ Recordmend is a tool for music producers that recommends new songs for them to s
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
-I started making hip hop beats in high school when my parents' computer guy put a terabyte of music on our new computer (he probably wanted to distract from how much he was overcharging us.) Suddenly I had huge amounts of songs to search through and listen to, and I found that every once in a while, I would make a discovery: There was a perfect sample hidden in one of the songs. I loved those moments.
-
-However, finding those gems could take hours of patient listening. This strategy remains the only way to find new samples, and it means that finding new samples requires a lot of leg work. This leads many producers to only sample the classics (James Brown, for example) and to leave the huge mass of work that is music unsearched.
-
-Recordmender promises to help producers narrow their search down to more promising songs. It won't remove the leg work, but the time cost could be cut down a great deal. Furthermore, getting producers to sample from new songs could increase diversity in modern music, introduce younger listeners to a wider selections of songs, and foster cross-pollination across genres and generations.
+Recordmender helps producers narrow their search down to more promising songs. It won't remove the leg work, but the time cost could be cut down a great deal. Furthermore, getting producers to sample from new songs could increase diversity in modern music, introduce younger listeners to a wider selections of songs, and foster cross-pollination across genres and generations.
 
 ## Recommenders help users choose between many options   
 
-The problem of too many options can be addressed using a recommendation engine. At first pass, many options may seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>1</sup> Although this phenomenon has received increased scientific scrutiny<sup>2</sup> recently, it is supported by a 2015 meta-analysis.<sup>3</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase process easier and quicker.
+At first pass, many options may seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>1</sup> Although this phenomenon has received increased scientific scrutiny<sup>2</sup> recently, it is supported by a 2015 meta-analysis.<sup>3</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase process easier and quicker.
 
 ## Types of recommendation engines
 
-Recommendation engines are split into two types, <i>content filtering</i> and <i>collaborative filtering</i>. In content filtering, characterists about users and items are entered into the algorithm. But in collaborative filtering, the user's behavior is all that is needed to make recommendations. By monitoring what items its users' choose, companies learn more about both, and are thus able to identify which users will want which things. The user doesn't even need to explicitly rate the items they view- instead, their watch patterns are enough to learn their likes and dislikes. Such a model is referred to as an <i>implicit feedback</i> model, as opposed to an <i> explicit feedback </i> model.
+Recommendation engines are split into two types, <i>content filtering</i> and <i>collaborative filtering</i>. In content filtering, characterists about users and items are entered into the algorithm. But in collaborative filtering, the user's behavior is all that is needed to make recommendations. By monitoring what items its users' choose, companies are able to identify which users will want which things. The user doesn't even need to explicitly rate the items they view- instead, their watch patterns are enough to learn their likes and dislikes. Such a model is referred to as an <i>implicit feedback</i> model, as opposed to an <i> explicit feedback </i> model.
 
 ![types of recommenders](images/recommender_types.png)
 ## Methodology
@@ -51,7 +47,7 @@ The dot product of these matrices is an attempt to reconstitute the original uti
 
 Like other gradient descent algorithms, this model begins with taking the squared error of our prediction <a href="https://www.codecogs.com/eqnedit.php?latex=(p_{ui}&space;-&space;x_u^Ty_i)^2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?(p_{ui}&space;-&space;x_u^Ty_i)^2" title="(p_{ui} - x_u^Ty_i)^2" /></a>. It then multiplies our error by our confidence in this prediction, <a href="https://www.codecogs.com/eqnedit.php?latex=c_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?c_{ui}" title="c_{ui}" /></a>, thus increasing the cost of errors on high confidence user-item interactions. Across all users <a href="https://www.codecogs.com/eqnedit.php?latex=x" target="_blank"><img src="https://latex.codecogs.com/gif.latex?x" title="x" /></a> and items <a href="https://www.codecogs.com/eqnedit.php?latex=y" target="_blank"><img src="https://latex.codecogs.com/gif.latex?y" title="y" /></a>, we minimize this cost.
 
-In practice, however, implementing stochastic gradient descent is recommenders, because there are usually billions of user-item interactions to compute over, which is extremely computationally expensive.
+In practice, however, implementing stochastic gradient descent is impractical for recommenders, because there are usually billions of user-item interactions to compute over, which is extremely computationally expensive.
 
 ## ALS
 
@@ -92,13 +88,7 @@ The model was ranked using a ranking algorithm adopted from [Hu 2008](https://ie
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> are the percentile ranking of each item for each user.
 
-How does this algorithm work? We can see that <a href="https://www.codecogs.com/eqnedit.php?latex=\sum_{u,i}&space;r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\sum_{u,i}&space;r^t_{ui}" title="\sum_{u,i} r^t_{ui}" /></a>is in both the numerator and the denominator. If <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> was not in the numerator, <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> would simply equal 1. 
-
-<a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> is the percentile ranking of each item for each user, such that the item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%.
-
-Therefore, if the algorithm is correct, the low percentages will cancel out the higher <a href="https://www.codecogs.com/eqnedit.php?latex=r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?r^t_{ui}" title="r^t_{ui}" /></a>, making the <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> go towards 0.
-
-The item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%.
+How does this algorithm work? We can see that <a href="https://www.codecogs.com/eqnedit.php?latex=\sum_{u,i}&space;r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\sum_{u,i}&space;r^t_{ui}" title="\sum_{u,i} r^t_{ui}" /></a>is in both the numerator and the denominator. If <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> was not in the numerator, <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> would simply equal 1. <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> is the percentile ranking of each item for each user, such that the item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%. Therefore, if the algorithm is correct, the low percentages will cancel out the higher <a href="https://www.codecogs.com/eqnedit.php?latex=r^t_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?r^t_{ui}" title="r^t_{ui}" /></a>, making the <a href="https://www.codecogs.com/eqnedit.php?latex=\overline{rank}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\overline{rank}" title="\overline{rank}" /></a> go towards 0. Thus, the item most highly recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 0.00\% and the item least recommended has a <a href="https://www.codecogs.com/eqnedit.php?latex=rank_{ui}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?rank_{ui}" title="rank_{ui}" /></a> of 100.00\%.
 
 ## Perform Test/Train Split
 
@@ -110,23 +100,18 @@ We train the model on this `train` dataset with these specific values hidden.
 
 ![Creating train and test set](images/train_test.png)
 
-## Making model better
-
-We found that lower # of factors lead to a better rank score. 12 worked the best.
-
-Different regularization values of lambda were tried from 0.01 to 1000.
-
-Different numbers of iterations from 10 to 210, in steps of 40. 
-
-With these best values, different numbers of artists sampled and producers were tried.
-
 ## The model performance was hampered by low numbers of training examples for most producers.
 
 ![](images/samples_per_producers_in_train_set.png)
 
-## Rank Score got better when producers with few sampled songs (training examples) were included.
+## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
 ![](images/rank_score_over_training_examples.png)
+
+
+## Grid Searching the model
+
+I found that 20 factors, a lambda of 30, and 50 iterations gave the best rank score. 
 
 ## Conclusion and Future steps
 My model scores much better than random and is similar to popularity. However, many of its’ recommendations are lacking in diversity. Furthermore, it is not effective for producers with few sampled artists. A multi-level ensemble recommender with content filtering may help to address these problems. 
