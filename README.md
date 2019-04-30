@@ -7,17 +7,6 @@ Recordmend is a tool for music producers that recommends new songs for them to s
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
-Recordmender helps producers narrow their search down to more promising songs. It won't remove the leg work, but the time cost could be cut down a great deal. Furthermore, getting producers to sample from new songs could increase diversity in modern music, introduce younger listeners to a wider selections of songs, and foster cross-pollination across genres and generations.
-
-## Recommenders help users choose between many options   
-
-At first pass, many options may seem to be a positive thing. With more options, one should have a better chance of finding what they want, right? However, psychologists such as Barry Shwartz have argued that more is not always better, dubbing this phenomenom the "Paradox of Choice".<sup>1</sup> Although this phenomenon has received increased scientific scrutiny<sup>2</sup> recently, it is supported by a 2015 meta-analysis.<sup>3</sup> The concept is simple: More options mean more decisions to make, and decision-making can be a mentally exhausting process. If companies can present users with a limited number of appropriate, well-tailored recommendations, they limit the number of decisions the user has to make, thus making the entire purchase process easier and quicker.
-
-## Types of recommendation engines
-
-Recommendation engines are split into two types, <i>content filtering</i> and <i>collaborative filtering</i>. In content filtering, characterists about users and items are entered into the algorithm. But in collaborative filtering, the user's behavior is all that is needed to make recommendations. By monitoring what items its users' choose, companies are able to identify which users will want which things. The user doesn't even need to explicitly rate the items they view- instead, their watch patterns are enough to learn their likes and dislikes. Such a model is referred to as an <i>implicit feedback</i> model, as opposed to an <i> explicit feedback </i> model.
-
-![types of recommenders](images/recommender_types.png)
 ## Methodology
 
 I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. 
@@ -100,9 +89,6 @@ We train the model on this `train` dataset with these specific values hidden.
 
 ![Creating train and test set](images/train_test.png)
 
-## The model performance was hampered by low numbers of training examples for most producers.
-
-![](images/samples_per_producers_in_train_set.png)
 
 ## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
@@ -114,7 +100,7 @@ We train the model on this `train` dataset with these specific values hidden.
 I found that 20 factors, a lambda of 30, and 50 iterations gave the best rank score. 
 
 ## Conclusion and Future steps
-My model scores much better than random and is similar to popularity. However, many of its’ recommendations are lacking in diversity. Furthermore, it is not effective for producers with few sampled artists. A multi-level ensemble recommender with content filtering may help to address these problems. 
+My model scores much better than random and is similar to popularity. However, it is not effective for producers with few sampled artists. A multi-level ensemble recommender with content filtering may help to address these problems. 
 
 1. https://www.scientificamerican.com/article/the-tyranny-of-choice/
 
