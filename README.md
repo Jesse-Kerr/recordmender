@@ -89,9 +89,6 @@ We train the model on this `train` dataset with these specific values hidden.
 
 ![Creating train and test set](images/train_test.png)
 
-## The model performance was hampered by low numbers of training examples for most producers.
-
-![](images/samples_per_producers_in_train_set.png)
 
 ## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
