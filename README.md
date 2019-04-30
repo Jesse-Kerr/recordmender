@@ -7,7 +7,6 @@ Recordmend is a tool for music producers that recommends new songs for them to s
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
-![types of recommenders](images/recommender_types.png)
 ## Methodology
 
 I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. 
