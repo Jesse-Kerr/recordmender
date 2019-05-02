@@ -3,7 +3,9 @@
 Recordmend is a tool for music producers that recommends new songs for them to sample based off of their sampling history. 
 
 ## What is sampling?
-![j dilla](images/j_dilla_searching.jpg)
+<img src = "/images/j_dilla_searching.jpg" width="220" height="320" align = "left">
+
+<br>
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
@@ -11,11 +13,11 @@ Sampling is the process of reusing portions of older songs in new ones. Also cal
 
 I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. 
 
-<img src="/images/whosampled_screenshot2.png"  width="320" height="320" align = "left">
+<img src="/images/whosampled_screenshot2.png" width="320" height="320" align = "left">
 
 I then decomposed the matrix with Singular Value Decomposition and optimized the two component matrices by Alternating Least Squares in Pandas and Numpy. Singular Value Decomposition is a method of decomposing a matrix into two component matrices, whose dimensions are determined by the number of latent factors in the data. 
 
-![SVD visualized](images/svd.png)
+<img src = "images/svd.png" width="320" height="320" align = "left">
 
 The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
 
