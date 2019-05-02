@@ -3,27 +3,19 @@
 Recordmend is a tool for music producers that recommends new songs for them to sample based off of their sampling history. 
 
 ## What is sampling?
-<img src = "/images/j_dilla_searching.jpg" width="420" height="320" align = "left">
+<img src = "/images/j_dilla_searching.jpg" width="420" height="320">
 
-<br> 
-
-<br>
-
-<br>
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
 ## Methodology
 
 I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. 
 
-<img src="/images/whosampled_screenshot2.png" width="320" height="320" align = "left">
-
-<div style="page-break-after: always;"></div>
-
+<img src="/images/whosampled_screenshot2.png" width="420" height="320">
 
 I then decomposed the matrix with Singular Value Decomposition and optimized the two component matrices by Alternating Least Squares in Pandas and Numpy. Singular Value Decomposition is a method of decomposing a matrix into two component matrices, whose dimensions are determined by the number of latent factors in the data. 
 
-<img src = "images/svd.png" width="320" height="320" align = "left">
+<img src = "images/svd.png" width="320" height="320">
 
 The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
 
@@ -94,14 +86,11 @@ dataframe to train on. Instead, we create a test set by taking some percentage o
 replacing them with zeros- in other words, acting as if the producer has not sampled those artists.
 
 We train the model on this `train` dataset with these specific values hidden. 
-
-![Creating train and test set](images/train_test.png)
-
+<img src = "images/train_test.png" width="420" height="320">
 
 ## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
-![](images/rank_score_over_training_examples.png)
-
+<img src = "images/rank_score_over_training_examples.pn" width="420" height="320">
 
 ## Grid Searching the model
 
