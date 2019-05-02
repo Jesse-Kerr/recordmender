@@ -11,7 +11,7 @@ Sampling is the process of reusing portions of older songs in new ones. Also cal
 
 I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. 
  
-![Purple arrows show producer and sampled song](images/whosampled_screenshot2.png)
+![test image size](images/whosampled_screenshot2.png){:height="50%" width="50%"}
 
 I then decomposed the matrix with Singular Value Decomposition and optimized the two component matrices by Alternating Least Squares in Pandas and Numpy. Singular Value Decomposition is a method of decomposing a matrix into two component matrices, whose dimensions are determined by the number of latent factors in the data. 
 
