@@ -5,8 +5,11 @@ Recordmend is a tool for music producers that recommends new songs for them to s
 ## What is sampling?
 <img src = "/images/j_dilla_searching.jpg" width="420" height="320" align = "left">
 
-<div style="page-break-after: always;"></div>
+<br> 
 
+<br>
+
+<br>
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
 ## Methodology
