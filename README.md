@@ -3,7 +3,7 @@
 Recordmend is a tool for music producers that recommends new songs for them to sample based off of their sampling history. 
 
 ## What is sampling?
-<img src = "/images/j_dilla_searching.jpg" width="520" height="380">
+<img src = "/images/j_dilla_searching.jpg" width="520" height="380" align="center">
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
@@ -91,6 +91,16 @@ We train the model on this `train` dataset with these specific values hidden.
 ## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
 <img src = "images/rank_score_over_training_examples.pn" width="420" height="320">
+
+## Model Recommendations
+
+Here are recommendations for three artists who represent very different genres and styles of music. 40 represents hip hop (he is Drake's producer), The Flaming Lips represent Rock, and Bjork represents alternative.
+
+<img src = "images/Screenshot_2019-04-15 model_understanding(1).png" width="420" height="320">
+
+<img src = "images/Screenshot_2019-04-15 model_understanding-1.png" width="420" height="320">
+
+<img src = "images/noah 40.png" width="420" height="320">
 
 ## Grid Searching the model
 
