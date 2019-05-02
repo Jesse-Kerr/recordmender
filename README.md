@@ -90,7 +90,7 @@ We train the model on this `train` dataset with these specific values hidden.
 
 ## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
-<img src = "images/rank_score_over_training_examples.pn" width="420" height="320">
+<img src = "images/rank_score_over_training_examples.png" width="420" height="320">
 
 ## Model Recommendations
 
