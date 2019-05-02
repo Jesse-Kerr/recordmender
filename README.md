@@ -96,11 +96,11 @@ We train the model on this `train` dataset with these specific values hidden.
 
 Here are recommendations for three artists who represent very different genres and styles of music. 40 represents hip hop (he is Drake's producer), The Flaming Lips represent Rock, and Bjork represents alternative.
 
-<img src = "images/Screenshot_2019-04-15 model_understanding(1).png">
+<img src = "images/Screenshot_2019-04-15 model_understanding(1).png" width="420" height="520">
 
-<img src = "images/Screenshot_2019-04-15 model_understanding-1.png">
+<img src = "images/Screenshot_2019-04-15 model_understanding-1.png" width="420" height="520">
 
-<img src = "images/noah 40.png">
+<img src = "images/noah 40.png" width="420" height="520">
 
 ## Grid Searching the model
 
