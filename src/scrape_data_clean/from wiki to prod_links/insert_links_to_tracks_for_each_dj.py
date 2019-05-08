@@ -1,5 +1,9 @@
+'''
+This module takes the list of DJs from Wikipedia, searches each of them in 
+Whosampled.com, and returns the links to their song sample pages.
+'''
 
-from whosampled_scrape import Scraper
+from src.scrape_data_clean.whosampled_scrape import Scraper
 
 if __name__ == "__main__":
     scraper = Scraper()
@@ -12,10 +16,8 @@ if __name__ == "__main__":
             scraper.go_to_dj_page(dj)
             print("At {} page".format(dj))
             scraper.filter_page_by_songs_artist_sampled()
-            scraper.get_num_samples_insert_mongo()
             while scraper.more_who_sampled_pages == True:
                 scraper.get_link_to_tracks_by_dj()
                 scraper.go_to_next_who_sampled_page()
         except:
             print("{} was unsuccessful!".format(dj))
-    scraper.driver.quit()

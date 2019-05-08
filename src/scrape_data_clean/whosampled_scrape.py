@@ -43,7 +43,7 @@ class Scraper():
     def get_prod_names_from_wikipage(self):
 
         '''
-        Returns all of the djs off of a specific wikipage. 
+        Returns all of the producer names off of a specific wikipage. 
         '''
         page_djs = self.driver.find_elements_by_xpath(
             "//div[@class='mw-category-group']/ul/li/a")
@@ -94,11 +94,14 @@ class Scraper():
 
     def go_to_who_sampled_home_page(self):
         '''
-        Takes webscraper to the who_sampled homepage.d
+        Takes webscraper to the who_sampled homepage
         '''
         self.driver.get("http://www.whosampled.com")
 
     def set_more_who_sampled_pages_true(self):
+        '''
+        Set at the beginning, when going through list of pages for a DJ.
+        '''
         self.more_who_sampled_pages = True
 
     def go_to_dj_page(self, dj):
@@ -110,7 +113,6 @@ class Scraper():
         Returns: 
             None
         '''
-
         # Ampersands mess up the search function- everything after the ampersand 
         # gets deleted. So I replace it with and.
         dj = re.sub('&amp;', 'and', dj)
@@ -131,6 +133,10 @@ class Scraper():
         artist = self.driver.find_element_by_xpath("//div[@id='searchArtists']/ul/li[1]")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
+
+        # Turn to self.dj, so that this input is available to other methods in 
+        # the class
+        self.dj = dj
 
     def filter_page_by_songs_artist_sampled(self):
 
@@ -154,16 +160,36 @@ class Scraper():
     def get_link_to_tracks_by_dj(self):
         '''
         Gets the links to the tracks for the DJ on that page (10 at most)
+        Originally we put these directly into the MongoDB, but now the return
+        from this method is being manipulated further. 
         '''
-        # Links to 
+        # Links to songs the DJ sampled are called connections.
         tracks = self.driver.find_elements_by_xpath("//a[@class='connectionName playIcon']")
         track_links = [track.get_attribute('href') for track in tracks]
         return track_links
         #insert into MongoDB
-        # db.coll.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}}, upsert= True)    
+        #db.coll.update({'dj': self.dj}, {'$push': {'track_links': {'$each' :track_links}}}, upsert= True)    
         #print("{} links".format(len(track_links)))
 
     def get_links_for_songs_with_more_than_3_samples(self, all_links, all_nums):
+        
+        '''
+        This method is used when we are trying to make the list of producers
+        exhaustive. When we find a song by a producer which sampled more than
+        3 songs, we cannot get all of the links in one go. So we save those 
+        links, and the number of sampled songs we missed/ producer song, in 
+        order to go back to later.  
+
+        Input: 
+            all_links: The list of links to the pages for the songs with more 
+            than 3 samples. This may be an empty list.
+            all_nums: The number of songs that we missed. A list with same 
+            length as all_links. Also can be empty.
+        Returns:
+            [all_links, all_nums], but with any added missed links and the 
+            number missed on those pages. These may still be empty lists.
+
+        '''
 
         self.driver.implicitly_wait(0)
         
@@ -182,21 +208,26 @@ class Scraper():
 
     def go_to_next_who_sampled_page(self):
 
-        #Set implicit wait to low here, because we know it is likely not to find it
+        '''
+        Looks for elements with the class name "next". This is the link to the 
+        next page. 
+        If the element exists, it takes us to that next page.
+        Otherwise, it stops and sets more_who_sampled_pages to False.
+        '''    
+        # Set implicit wait to low here, because we know it is likely not to find it
         self.driver.implicitly_wait(0)
+        # Find the elements that have class name "next".
         next_page = self.driver.find_elements_by_class_name("next")
+        # If the list has a length of at least 1, go to the next page.
         if len(next_page) > 0:
             next_page = next_page[0]
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
-            #sleep(10)
             next_page.click()
-            #sleep(8)
+        # Otherwise, there are no more pages.
         else:
             print("No more pages")    
             self.more_who_sampled_pages = False
         self.driver.implicitly_wait(60)
-        #sleep(2.1)
-
 
     def get_and_insert_links_to_song_sample_songs(self, song_page):    
 
@@ -392,32 +423,12 @@ class Scraper():
 
         db.create_collection('exhaustive_sampled_songs')
 
-    def get_sampled_songs_to_do(self):
-        
-        #Get the list of sampled_songs that appear in the df. 
-        _, df = from_mongo_collection_to_utility_matrix(db.main_redo)
-        sampled_songs_in_df = df.sampled_artist_song.unique()
-        
-        # Check that we will only do the songs which are not in db.exhaustive_sampled_songs
-        sampled_songs_to_do = [sampled_song for sampled_song in sampled_songs_in_df if sampled_song not in set(db.exhaustive_sampled_songs.distinct('sampled_song'))]
-
-        return sampled_songs_to_do
-
-    def get_producers_to_do(self):
-        
-        #Get the list of sampled_songs that appear in the df. 
-        _, _, df = from_mongo_collection_to_utility_matrix(db.main_redo)
-        producers_in_df = df.new_song_producer.unique()
-        
-        # Check that we will only do the songs which are not in db.exhaustive_producers
-        producers_to_do = [prod for prod in producers_in_df if prod not in set(db.exhaustive_producers.distinct('dj'))]
-
-        return producers_to_do 
-
     def get_to_connections_page_for_input(self, user_input):
         
         '''
-        Inputs sampled_song into search bar and presses enter
+        Inputs sampled_song into search bar and presses enter.
+        This is part of the process of exhausting all of the sampled_song in the
+        dataset.
         '''
 
         #Ampersands, hashtags, plusses and semicolons mess with the search function.
@@ -430,7 +441,8 @@ class Scraper():
         # Decrease implicitly wait for Try/ Except because I know this is likely to fail
         self.driver.implicitly_wait(0)
 
-        # If I run find_elements, it has length of 1, which is good.
+        # Find whether there are any connections for this song (which there 
+        # should be.)
         try:
 
             connections = self.driver.find_element_by_link_text("Connections")
@@ -440,11 +452,14 @@ class Scraper():
             self.has_connections = True
         except:
             self.has_connections = False
-        #sleep(5)
         
         self.driver.implicitly_wait(10)
 
     def get_all_tracks_from_page(self):
+        
+        '''
+        Gets the link to all the connections on the page.
+        '''
         connections = self.driver.find_elements_by_xpath("//span[@class = 'connectionTitle']/a")
         connections = [connection.get_attribute('href') for connection in connections]
         return connections

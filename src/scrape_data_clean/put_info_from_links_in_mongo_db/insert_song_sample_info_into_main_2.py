@@ -4,7 +4,7 @@ db = client.whosampled
 
 import numpy as np
 from time import sleep
-from whosampled_scrape import Scraper
+from src.scrape_data_clean.whosampled_scrape import Scraper
 
 if __name__ == "__main__":
     scraper = Scraper()

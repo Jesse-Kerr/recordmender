@@ -3,7 +3,7 @@ from pymongo import DESCENDING
 client = MongoClient()
 db = client.whosampled
 
-from whosampled_scrape import Scraper
+from src.scrape_data_clean.whosampled_scrape import Scraper
 
 if __name__ == "__main__":
     scraper = Scraper()
@@ -16,5 +16,3 @@ if __name__ == "__main__":
             scraper.get_and_insert_links_to_song_sample_songs(link)
         except:
             print("Insertion into Mongo failed or was not complete for {}".format(link))
-    #scraper.get_distinct_from_song_sample_pages_db()
-    scraper.driver.quit()

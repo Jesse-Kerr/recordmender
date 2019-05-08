@@ -4,7 +4,7 @@ db = client.whosampled
 
 import numpy as np
 from time import sleep
-from whosampled_scrape import Scraper
+from src.scrape_data_clean.whosampled_scrape import Scraper
 
 if __name__ == "__main__":
     scraper = Scraper()
@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     song_sampled_pages_to_do = db.song_sampled_pages_to_do.distinct('link')
     
-    for song_sample_page in song_sampled_pages_to_do[-20000:-10000]: 
+    for song_sample_page in song_sampled_pages_to_do[-30000:-20000]: 
         try:
             scraper.insert_song_sample_info_into_db_main(song_sample_page)
             print('Done with {}'.format(song_sample_page))

@@ -1,11 +1,8 @@
 from pymongo import MongoClient
 client = MongoClient()
 db = client.whosampled
-import pandas as pd
-import numpy as np
-#Empty what we have, and check again.
 
-#db.song_sampled_pages_to_do.drop()
+#Empty what we have, and check again.
 db.song_sampled_pages_to_do.drop()
 
 df = pd.DataFrame(list(db.main_redo.find()))
