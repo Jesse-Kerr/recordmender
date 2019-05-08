@@ -3,19 +3,19 @@
 Recordmend is a tool for music producers that recommends new songs for them to sample based off of their sampling history. 
 
 ## What is sampling?
-![j dilla](images/j_dilla_searching.jpg)
+<img src = "/images/j_dilla_searching.jpg" width="520" height="380" align="center">
 
 Sampling is the process of reusing portions of older songs in new ones. Also called “crate-digging”, it can involve extensive searching to find a new sound. 
 
 ## Methodology
 
 I created a producer-song utility matrix by scraping 200,000 links from whosampled.com into MongoDB using the Selenium Webdriver in Python. 
- 
-![Purple arrows show producer and sampled song](images/whosampled_screenshot2.png)
+
+<img src="/images/whosampled_screenshot2.png" width="520" height="420">
 
 I then decomposed the matrix with Singular Value Decomposition and optimized the two component matrices by Alternating Least Squares in Pandas and Numpy. Singular Value Decomposition is a method of decomposing a matrix into two component matrices, whose dimensions are determined by the number of latent factors in the data. 
 
-![SVD visualized](images/svd.png)
+<img src = "images/svd.png" width="720" height="400">
 
 The dot product of these matrices is an attempt to reconstitute the original utility matrix. Originally, these models were trained by stochastic gradient descent, in the form of the equation below:
 
@@ -86,14 +86,21 @@ dataframe to train on. Instead, we create a test set by taking some percentage o
 replacing them with zeros- in other words, acting as if the producer has not sampled those artists.
 
 We train the model on this `train` dataset with these specific values hidden. 
-
-![Creating train and test set](images/train_test.png)
-
+<img src = "images/train_test.png" width="420" height="320">
 
 ## Rank Score got better when producers with few sampled songs (training examples) were excluded.
 
-![](images/rank_score_over_training_examples.png)
+<img src = "images/rank_score_over_training_examples.png" width="420" height="320">
 
+## Model Recommendations
+
+Here are recommendations for three artists who represent very different genres and styles of music. 40 represents hip hop (he is Drake's producer), The Flaming Lips represent Rock, and Bjork represents alternative.
+
+<img src = "images/Screenshot_2019-04-15 model_understanding(1).png" width="420" height="520">
+
+<img src = "images/Screenshot_2019-04-15 model_understanding-1.png" width="420" height="520">
+
+<img src = "images/noah 40.png" width="420" height="520">
 
 ## Grid Searching the model
 
