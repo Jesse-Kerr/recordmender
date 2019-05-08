@@ -15,17 +15,35 @@ os.environ["OPENBLAS_NUM_THREADS"]="1"
 import random
 import re
 
+class Analysis():
+    pass
+from pymongo import MongoClient
+client = MongoClient()
+db = client.whosampled
+import re
+
+import pandas as pd
+
 def clean_up_mongo_coll(mongo_coll):
 
     '''
-    Takes a mongo collection. Removes duplicates, instances where producer or artist
-    are not listed. Cleans up sampled artist.
+    Takes a mongo collection. Removes duplicates, instances where producer or 
+    artist are not listed. Cleans up sampled artist.
 
-    Returns df
+    Input:
+        mongo_coll
+
+    Returns:
+        df: Cleaned up pandas dataframe.
     '''
     df = pd.DataFrame(list(db.main_redo.find()))
+
+    #Remove any possible duplicates
     df = df.drop_duplicates(['URL', 'new_song_producer'])
+
+    #drop rows with none_listed for essential columns
     df = df[(df.new_song_producer != 'None Listed') & (df.sampled_artist != 'None Listed') ]
+
     df.sampled_artist = df.sampled_artist.apply(lambda x: re.sub('\(.*\)', '', x))
     df['new_song_producer'] = df.new_song_producer.apply(lambda x: re.sub('\(.*\)', '', x))
 
@@ -40,14 +58,18 @@ def clean_up_mongo_coll(mongo_coll):
     .apply(lambda x: x.strip())\
     .apply(lambda x: re.sub(' +', ' ', x))
 
+    # Create new column with both sampled_artist and sampled_name, separated by
+    # a hyphen.
     df['sampled_artist_song'] = df.sampled_artist + ' - ' + df.sampled_song_name
     return df
 
 def turn_df_to_util_mat(df, col1, col2):
     '''
-    Inputs: Df, col1, col2, lim_col_1, lim_col_2
-    Returns: Utility matrix of two col, after filtering that
-    the columns have the minimum numbers specified.
+    Inputs: 
+        Df, col1, col2, lim_col_1, lim_col_2
+    Returns: 
+        Utility matrix of two col, after filtering that
+        the columns have the minimum numbers specified.
     '''
     return pd.crosstab(df[col1], df[col2])
 
@@ -57,7 +79,8 @@ def get_indices_of_test_set_values(ui_util_mat, percent):
     Given a utility matrix and a desired train/test split, returns two lists:
     The row and column indices of the test set data.
     
-    Indices should be in user, item form- therefore, matrix needs to be in user_item form.
+    Indices should be in user, item form. Therefore, matrix needs to be in 
+    user_item form.
     
     '''
     
@@ -85,10 +108,13 @@ def make_train_set_and_test_set(user_inds, item_inds, ui_util_mat):
     
     Before doing this, copies train set to test set.
 
-    Changes as a for loop
     '''
     train = ui_util_mat.copy()
     test = ui_util_mat.copy()
+    
+    # It is necessary to turn to sparse before applying the following step. 
+    # Otherwise it does not work correctly and the wrong indices are replaced
+    # with zeroes.
     train = csr_matrix(train.values)
     train[user_inds, item_inds] = 0
     train = pd.DataFrame(train.todense(), columns= ui_util_mat.columns, index = ui_util_mat.index)
@@ -351,3 +377,56 @@ if __name__ == "__main__":
     statistics_at_interaction_limits = pd.DataFrame(rows, columns = columns)
 
     statistics_at_interaction_limits.to_csv("statistics_at_interaction_limits.csv")
+
+def get_top_recommends_not_yet_sampled_for_user(user, predictions_user_item, user_item, n_recommends =10, filter =True):
+    
+    '''
+    Input: 
+        user: Producer for whom you want to get recommendations for
+        predictions_user_art: The predictions for the user, in user-artist format
+        user_art: The original utility matrix used to train the model.
+
+    Returns:
+        Top_n_recommends, not filtered
+
+    '''
+    # Get index of user 
+    index_of_user = user_item.index.get_loc(user)
+    
+    # Filter the predictions dataset for only this user
+    filtered_preds = predictions_user_item[index_of_user,]
+
+    # Return the indices which would sort the array. E.g, if you were to put
+    # 110 at the front, you would win, so we know that 110 is the best
+
+    order = np.flip(filtered_preds.argsort())
+
+    if filter == True:
+
+        #Get the list of everything our producer didn't sample
+        indices_where_producer_didnt_sample = np.where(user_item.iloc[index_of_user] == 0)[0]
+
+        # Filter the rankings to return only the highest rankings where the user didn't sample
+        ordered_filtered = order[np.isin(order, indices_where_producer_didnt_sample)]
+        
+        # Select the top n of these
+        ordered_filtered_top = ordered_filtered[:n_recommends]
+        
+        return [user_item.columns[n] for n in ordered_filtered_top]
+        
+
+    else:
+        #Don't filter, just take top recommends.
+        ordered_top = order[:n_recommends]
+        return [user_item.columns[n] for n in ordered_top]
+
+def get_similar_to_prod(user, n_similar, model, artist_user):
+    
+    # Get index of user 
+    index_of_user = artist_user.columns.get_loc(user)
+    
+    similar_users = model.similar_users(index_of_user, N= n_similar)
+    
+    similar_user_inds = [sim[0] for sim in similar_users]
+    
+    return [artist_user.columns[n] for n in similar_user_inds]

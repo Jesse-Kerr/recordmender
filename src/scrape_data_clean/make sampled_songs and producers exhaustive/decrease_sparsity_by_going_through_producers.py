@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
             scraper.set_more_who_sampled_pages_true()
             
-            #Initialize empty list to hold the tracks_sampled_by_prod
+            #Initialize empty list.
             all_links_to_song_sample_pages = []
 
             # Only three sample pages are listed per track.
