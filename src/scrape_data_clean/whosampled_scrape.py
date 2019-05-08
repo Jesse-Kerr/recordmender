@@ -1,17 +1,16 @@
-from time import sleep
-from pyvirtualdisplay import Display
-import re
+# Used to stop the scraper so that it doesn't get caught by WhoSampled.
+from time import sleep 
+import re # Regular expression module
+from selenium import webdriver # The webdriver.
 
-from selenium import webdriver
+# The Keys module allows you to send keys like Enter, Tab, without using the UTF
+#code for them. 
+from selenium.webdriver.common.keys import Keys 
+
+# Allows you to set the webdriver options
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
-chrome_options = Options()
-chrome_options.add_argument("--disable-extensions")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--headless")
 
-from turn_db_main_into_utility_matrix import from_mongo_collection_to_utility_matrix
-
+# Connect to the specific mongo db.
 from pymongo import MongoClient
 client = MongoClient()
 db = client.whosampled
@@ -21,17 +20,33 @@ class Scraper():
     def __init__(self):
 
         '''
-        Initializes scraper. Sets who_sampled_more_pages = True
+        Initializes an instance of the Selenium scraper with options inherited
+        from an instance of the Options class.  
         '''
+        # Initialize an instance of Options, with the below arguments added.
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-extensions") #not sure why
+        chrome_options.add_argument("--disable-gpu") #not sure why
+        # So that you don't have to see the chrome browser.
+        chrome_options.add_argument("--headless") 
+
+        # Initialize the webdriver with the above options.
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
+
+        # The implicitly_wait parameter means when you search for an element, 
+        # Selenium will wait this long before failing and saying that it's not 
+        # there. This is good when you want it to wait while a website loads, but 
+        # bad when you put it in a Try, Except and you want it to fail- then it 
+        # takes 60 seconds to fail.
         self.driver.implicitly_wait(60)
-        
-    def get_links_from_wikipage(self):
+
+    def get_prod_names_from_wikipage(self):
 
         '''
         Returns all of the djs off of a specific wikipage. 
         '''
-        page_djs = self.driver.find_elements_by_xpath("//div[@class='mw-category-group']/ul/li/a")
+        page_djs = self.driver.find_elements_by_xpath(
+            "//div[@class='mw-category-group']/ul/li/a")
         return [dj.get_attribute('title') for dj in page_djs]
 
     def go_to_next_wiki_page(self):
@@ -41,63 +56,81 @@ class Scraper():
         '''
         
         try:
+            # Find the link that has the text "next page" on it.
             next_page = self.driver.find_element_by_link_text('next page')
+            # Make sure it's in view.
             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_page)
-            #sleep(2)
+            # Click on it.
             next_page.click()
         except: 
+            #If there is no element with the text "next page" on it, end.
             print("Done with Wiki Section")
             self.more_wiki_pages = False
 
     def get_all_wiki_djs(self):
         
         '''
-        Gets all DJs from a specific category of Wikipedia
-        Returns a list of strings with any information in paranthese or brackets
+        Gets all DJs from a specific category of Wikipedia.
+        Returns a list of strings with any information in parantheses or brackets
         removed (usually just specifies that they are a musician.)
         '''
-
+        # As long as more_wiki_pages is True, Selenium will run the 
+        # go_to_next_wiki_page function.
         self.more_wiki_pages = True
-        all_djs = []
-        self.driver.get("https://en.wikipedia.org/wiki/Category:American_hip_hop_record_producers")
+        all_djs = [] # Empty list that will be filled with the DJs.
+
+        # Go to the wikipedia page that has the American hip hop record producers.
+        self.driver.get(
+            "https://en.wikipedia.org/wiki/Category:American_hip_hop_record_producers")
         while self.more_wiki_pages == True:
-            page_djs = self.get_links_from_wikipage()
+            # Get all producer names from the wikipage.
+            page_djs = self.get_prod_names_from_wikipage()
             all_djs += page_djs
             self.go_to_next_wiki_page()
-            #sleep(5)
+
+        # Remove any information in parantheses or brackets.
         all_djs = [re.sub("[\(\[].*?[\)\]]", "", dj) for dj in all_djs]
         return all_djs
 
     def go_to_who_sampled_home_page(self):
+        '''
+        Takes webscraper to the who_sampled homepage.d
+        '''
         self.driver.get("http://www.whosampled.com")
-        #sleep(5)
 
     def set_more_who_sampled_pages_true(self):
         self.more_who_sampled_pages = True
 
     def go_to_dj_page(self, dj):
         '''
-        Inputs the DJ you're working on into the search box. Gets you to his/her home page.
-        Inserts URLS for all songs a DJ has sampled into Mongo. 
-        Input: DJ (string)
-        Returns: None
+        1. Inputs the DJ you're working on into the search box, then clicks on 
+        the first response to the query that comes up.
+        Input: 
+            DJ (string)
+        Returns: 
+            None
         '''
+
+        # Ampersands mess up the search function- everything after the ampersand 
+        # gets deleted. So I replace it with and.
         dj = re.sub('&amp;', 'and', dj)
+        
+        # Hyphens also mess up the search functionality.
         dj = re.sub('-', ' ', dj)
         
         # The search box. This is where we will input the dj to search.
         search = self.driver.find_element_by_id('searchInput')
         self.driver.execute_script("arguments[0].scrollIntoView(true);", search)
-        #sleep(2)
+        
+        # Input the dj name to the search box.
         search.send_keys(dj)
-        # sleep(1)
 
-        #This opens the dropdown of different responses to our query. We
-        #generally want to click on the first element in the dropdown.
+        # By inputting the DJ name into the search, a dropdown opens with all the
+        # different responses to our query. We select and click on the first 
+        # element in the dropdown (the most relevant one).
         artist = self.driver.find_element_by_xpath("//div[@id='searchArtists']/ul/li[1]")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", artist)
         artist.click()
-        #sleep(5)
 
     def filter_page_by_songs_artist_sampled(self):
 
@@ -107,34 +140,22 @@ class Scraper():
         to filter only for songs that they sampled.
         '''
 
+        # This dropdown had the options: "Songs sampled by DJ", or 
+        # "Songs that sampled the DJ", etc.
         dropdown = self.driver.find_element_by_xpath("//div[@class='optionMenu artistPageMenu']")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", dropdown)
-        #sleep(2)
-        dropdown.click()
-        #sleep(5)
+        dropdown.click() # Open the dropdown
 
-        # the tracks sampled is always the second one
+        # the "Songs sampled by DJ" is always the second one.
         sampled = self.driver.find_element_by_xpath("//ul[@class = 'expanded']/li[2]")
         self.driver.execute_script("arguments[0].scrollIntoView(true);", sampled)
-        #sleep(2)
         sampled.click()
-        #sleep(5)
-        
-    def get_num_samples_insert_mongo(self):
-
-        '''
-        Inserts num_samples and prints it out.
-        '''
-
-        num_samples = self.driver.find_elements_by_xpath("//span[@class='section-header-title']")[0].get_attribute('innerHTML')
-        #num_samples = int(re.sub('a-z|A-Z| ', '', num_samples))
-        db.dj_meta_info.insert_one({"dj" : self.dj, "num_samples" : num_samples})
-        print("{} has {} samples, inserted into Mongo.".format(self.dj, num_samples))
 
     def get_link_to_tracks_by_dj(self):
         '''
         Gets the links to the tracks for the DJ on that page (10 at most)
         '''
+        # Links to 
         tracks = self.driver.find_elements_by_xpath("//a[@class='connectionName playIcon']")
         track_links = [track.get_attribute('href') for track in tracks]
         return track_links

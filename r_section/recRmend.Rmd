@@ -1,0 +1,178 @@
+---
+title: "recormend"
+output: html_document
+---
+
+
+```{r}
+library(mongolite)
+library(tidyverse)
+library(reticulate)
+library(recommenderlab)
+#library(janitor)
+```
+
+
+```{r}
+#connect to the mongo collection
+df <- mongo(
+  collection = "main_redo", db = "whosampled")
+
+#read it in to R df
+df2 = df$find()
+
+head(df2)
+dim(df2)
+```
+
+We have a df with over 200,000 rows and 16 columns. We are only interested in the new_song_producer and sampled_song columns. We also want to clean up these columns.
+ 
+```{r}
+
+clean_up_all_columns = function(x) {
+  #function to clean up the song_producer, sampled_artist, and       sampled_song columns
+  
+  #input: string
+  #output: cleaned string
+  
+  #remove parantheses and everything in between them. Or, sometimes   there is an opening parantheses and no closing, remove everything after the opening. (only happens twice)
+  x = str_replace_all(x, 
+    pattern = '\\(.*\\)|\\(.*|"', 
+    replacement = '')
+    
+  #remove hyphens, but replace them with a space
+  x = str_replace_all(x, pattern = "-", " ")
+  #remove the extra whitespace from string
+  x = str_squish(x)
+  
+  #lowercase all letters in string
+  x = str_to_lower(x)
+  
+  return(x)
+}
+
+```
+
+```{r}
+df2 = df2 %>%
+  
+  #select only the new producer and the artist and song that was sampled.
+  select(new_song_producer, sampled_artist, sampled_song_name) %>%
+
+  #drop the rows where it was unable to get the data
+  filter(new_song_producer != "None Listed" & sampled_artist != "None Listed" & sampled_song_name != "None Listed") %>%
+
+  #clean up text in every column
+  mutate_all(.funs = clean_up_all_columns) %>%
+  
+  #combine sampled artist and sampled song into one
+  unite("sampled_song_artist", c(sampled_artist, sampled_song_name), sep = " - ") %>%
+  
+  #drop duplicates
+  distinct()
+
+```
+
+Now we want to crosstab the matrix.
+
+Send to csv
+
+```{r}
+write_csv(df2, "/Users/Jesse/Documents/recordmender/r_section/cleaned_prods_samples.csv")
+```
+
+
+```{python}
+#import pandas as pd
+
+#prod_song = pd.read_csv("/Users/Jesse/Documents/recordmender/r_section/cleaned_prods_samples.csv")
+
+prod_song_util = pd.crosstab(prod_song["new_song_producer"],prod_song["sampled_song_artist"])
+
+```
+
+
+```{r}
+prod_song_util <- py$prod_song_util
+
+#sum(slice(prod_song_util, 47))
+
+# turn into matrix
+
+#replace all values greater than 1 with 1
+prod_song_util[prod_song_util >1] = 1
+
+#did it work?
+#dim(prod_song_util[prod_song_util >1])
+
+#filter to only include producers who have at least two samples, and songs that have been sampled at least once.
+prod_song_util_filt <- 
+  prod_song_util[rowSums(prod_song_util) >1,colSums(prod_song_util) >1]
+
+#this is all to check what the top ten producers are
+prod_song_util_filt$rows = rowSums(prod_song_util_filt)
+prod_song_util_filt$rank = rank(prod_song_util_filt$rows, ties.method = "random")
+prod_song_util_filt %>%
+  rownames_to_column('prods') %>%
+  filter(rank > 11440)
+
+prod_song_util_filt <- prod_song_util_filt %>%
+  select(-c(rows, rank))
+```
+
+Try with recommendlab.
+There are 107,523 actual interactions in my data.
+```{r}
+
+#turn to matrix
+data <- as.matrix(prod_song_util_filt)
+
+#need to turn it into a binary matrix?
+b <- as(data, "binaryRatingMatrix")
+
+#create a recommender using the ALS_implicit algorithm
+rec_als <- Recommender(b, method = "ALS_implicit",
+           parameter = list(lambda=30, n_factors=20,
+    n_iterations=1, seed = NULL, verbose = TRUE))
+
+#by setting verbose = True, the function prints out the cost (what function?) after each iteration. It decreases sharply after the 0th iteration, but doesn't really change after the 2nd iteration.
+
+#cost on 0th iteration: 8764204.81298824
+#[1] "1th iteration, step 1: cost function = 2456801.28634617"
+#[1] "1th iteration, step 2: cost function = 2370492.33745891"
+#create a popularity recommender
+
+
+rec_pop <- Recommender(b, method = "POPULAR")
+
+pops <- predict(rec_pop, b[81], n = 10)
+as(pops, "list")
+
+als_all <- predict(rec_als, b, 'ratings')
+
+yo = as(als_all, "list")
+yo2 = as.data.frame(yo)
+
+#the above method puts NAs for everything but the top 10 recommendations for a user.
+#below, I can find the top ten recommendations for the user, by finding the values for the user which are not NA.
+
+which(row.names(yo2) == "pete rock")
+
+
+colnames(yo2)[which(!is.na(yo2[8214,]))]
+
+
+row.names(prod_song_util_filt)[81]
+
+#list avail methods for implicit
+recommenderRegistry$get_entries(dataType = "binaryRatingMatrix")
+
+```
+
+```{r}
+#Here, I copy some of his code to see how to evaluate many recommenders
+
+scheme <- evaluationScheme(b, method="split", train=0.9, given=-5)
+
+```
+
