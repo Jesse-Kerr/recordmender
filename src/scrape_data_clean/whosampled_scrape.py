@@ -234,7 +234,8 @@ class Scraper():
         '''
         Takes the link to a song_page and finds all of the song_sample_pages
         associated with it. Inserts those into mongo.
-        '''    
+        '''  
+          
         self.driver.get(song_page)
         #sleep(5)
 
